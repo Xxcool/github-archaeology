@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GitHub 考古所 · 编程人格档案</title>
+<meta name="description" content="输入 GitHub 用户名，翻阅你的公开地层，出土一份专属《编程人格档案》。">
+<style>
+  :root{
+    --desk:#171310;
+    --desk-2:#221c16;
+    --paper:#f4e9d3;
+    --paper-2:#ece0c6;
+    --ink:#2a2118;
+    --ink-soft:#5f5140;
+    --ink-faint:#8d7d65;
+    --line:#c9b795;
+    --line-soft:#ded0b4;
+    --red:#ad382c;
+    --red-deep:#8a2a20;
+    --gold:#a8823f;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(1100px 700px at 50% -12%, rgba(255,255,255,.9) 0%, transparent 62%),
+      radial-gradient(700px 520px at 8% 86%, rgba(96,106,118,.16) 0%, transparent 62%),
+      radial-gradient(760px 520px at 94% 78%, rgba(86,96,108,.13) 0%, transparent 62%),
+      radial-gradient(1500px 1100px at 50% 46%, transparent 42%, rgba(58,64,72,.30) 100%),
+      linear-gradient(180deg,#f0eee7 0%, #e6e4dc 52%, #dad8cf 100%);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    padding:28px 16px 56px;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+  }
+  .serif{font-family:"Songti SC","STSong","SimSun","Noto Serif SC",serif}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Courier New",monospace}
+
+  /* 背景装饰层：考古探方（纯装饰，不参与交互、不遮挡内容） */
+  .desk-decor{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+  .desk-decor svg{width:100%;height:100%;display:block}
+
+  .sheet{
+    position:relative;
+    width:100%;
+    max-width:760px;
+    background:
+      repeating-linear-gradient(0deg, rgba(140,110,70,.035) 0 1px, transparent 1px 4px),
+      linear-gradient(160deg, #f7edda 0%, var(--paper) 45%, var(--paper-2) 100%);
+    border-radius:3px;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,.5) inset,
+      0 30px 70px -20px rgba(0,0,0,.75),
+      0 4px 18px rgba(0,0,0,.4);
+    padding:30px 30px 26px;
+    overflow:hidden;
+  }
+  .sheet::after{
+    content:"";
+    position:absolute; inset:10px;
+    border:1px solid rgba(160,132,92,.35);
+    pointer-events:none;
+  }
+  .corner{position:absolute;width:18px;height:18px;border:1px solid rgba(160,132,92,.5);pointer-events:none}
+  .corner.tl{top:10px;left:10px;border-right:0;border-bottom:0}
+  .corner.tr{top:10px;right:10px;border-left:0;border-bottom:0}
+  .corner.bl{bottom:10px;left:10px;border-right:0;border-top:0}
+  .corner.br{bottom:10px;right:10px;border-left:0;border-top:0}
+
+  /* masthead */
+  .masthead{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding-bottom:14px;border-bottom:2px solid var(--ink);position:relative;z-index:2}
+  .org{font-size:15.5px;letter-spacing:.05em;font-weight:700}
+  .org .en{display:block;font-size:9.5px;letter-spacing:.22em;color:var(--ink-faint);font-weight:400;margin-top:4px}
+  .stamp{
+    flex:0 0 auto;width:64px;height:64px;border:2px solid var(--red);color:var(--red);
+    border-radius:50%;display:flex;align-items:center;justify-content:center;text-align:center;
+    font-size:10.5px;line-height:1.25;letter-spacing:.08em;transform:rotate(-8deg);
+    box-shadow:0 0 0 3px rgba(173,56,44,.12) inset;font-weight:700;
+  }
+  .meta-line{display:flex;justify-content:space-between;gap:10px;font-size:10.5px;color:var(--ink-faint);letter-spacing:.08em;padding:8px 0 0;position:relative;z-index:2}
+
+  /* screens */
+  .screen{position:relative;z-index:2;animation:fade .5s ease both}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .hidden{display:none!important}
+
+  /* input */
+  .hero{padding:38px 0 8px}
+  .hero h1{font-size:34px;line-height:1.28;margin:0 0 16px;letter-spacing:.02em;font-weight:700}
+  .hero h1 em{font-style:normal;color:var(--red);position:relative;white-space:nowrap}
+  .hero h1 em::after{content:"";position:absolute;left:-3px;right:-3px;bottom:-8px;height:8px;background:rgba(173,56,44,.17);z-index:-1}
+  .lede{font-size:14.5px;line-height:1.85;color:var(--ink-soft);margin:0 0 26px}
+  .input-row{
+    display:flex;align-items:center;gap:2px;background:rgba(255,255,255,.55);
+    border:1.5px solid var(--ink);border-radius:2px;padding:0 4px 0 12px;transition:.2s;
+  }
+  .input-row:focus-within{box-shadow:0 0 0 4px rgba(173,56,44,.12);border-color:var(--red)}
+  .input-row .at{font-size:13px;color:var(--ink-faint);white-space:nowrap}
+  .input-row input{
+    flex:1;min-width:0;border:0;background:transparent;outline:none;padding:15px 8px;
+    font-size:16px;color:var(--ink);font-family:inherit;letter-spacing:.02em;
+  }
+  .input-row input::placeholder{color:#b1a189}
+  .btn{
+    border:1.5px solid var(--ink);background:transparent;color:var(--ink);
+    font-family:inherit;font-size:14px;letter-spacing:.06em;padding:12px 20px;border-radius:2px;
+    cursor:pointer;transition:.18s;font-weight:600;
+  }
+  .btn:hover{transform:translateY(-1px)}
+  .btn:active{transform:translateY(0)}
+  .btn.primary{background:var(--ink);color:var(--paper)}
+  .btn.primary:hover{background:var(--red-deep);border-color:var(--red-deep)}
+  .btn.ghost{border-color:rgba(42,33,24,.35);color:var(--ink-soft);font-weight:400}
+  .btn.ghost:hover{border-color:var(--ink);color:var(--ink)}
+  .btn.block{width:100%}
+  .btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+  .actions-in{display:flex;gap:10px;margin-top:14px}
+  .actions-in .btn{flex:1}
+  .hint{font-size:11.5px;color:var(--ink-faint);letter-spacing:.05em;margin:16px 0 0;line-height:1.7}
+  .chips{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin-top:14px;font-size:11px;color:var(--ink-faint)}
+  .chips .lead{letter-spacing:.06em}
+  .chip{
+    border:1px solid rgba(42,33,24,.28);background:rgba(255,255,255,.45);color:var(--ink-soft);
+    font-family:ui-monospace,monospace;font-size:11.5px;padding:4px 9px;border-radius:2px;cursor:pointer;
+    transition:.16s;letter-spacing:.02em;
+  }
+  .chip:hover{border-color:var(--ink);color:var(--ink);background:rgba(255,255,255,.85)}
+  .err{
+    margin-top:14px;padding:12px 14px;border-left:3px solid var(--red);background:rgba(173,56,44,.07);
+    font-size:13px;line-height:1.7;color:var(--red-deep);
+  }
+  .err b{display:block;margin-bottom:4px;letter-spacing:.05em}
+
+  /* how-to */
+  .howto{margin-top:30px;padding-top:18px;border-top:1px dashed var(--line)}
+  .howto h4{font-size:11px;letter-spacing:.2em;color:var(--ink-faint);margin:0 0 12px;font-weight:600}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0;padding:0;list-style:none}
+  .steps li{font-size:12px;line-height:1.65;color:var(--ink-soft);background:rgba(255,255,255,.4);border:1px solid var(--line-soft);padding:10px 11px;border-radius:2px}
+  .steps .n{display:block;font-size:10px;letter-spacing:.15em;color:var(--red);margin-bottom:5px;font-weight:700}
+
+  /* loading */
+  .loading{padding:70px 0 60px;text-align:center}
+  .drill{font-size:12px;letter-spacing:.3em;color:var(--ink-faint);margin-bottom:26px}
+  .load-title{font-size:22px;margin:0 0 10px;letter-spacing:.06em}
+  .load-sub{font-size:13px;color:var(--ink-soft);min-height:20px;letter-spacing:.05em}
+  .bar{height:2px;background:rgba(42,33,24,.12);margin:28px auto 0;max-width:340px;overflow:hidden}
+  .bar i{display:block;height:100%;width:0;background:var(--red);transition:width .5s ease}
+  .load-log{margin:22px auto 0;max-width:340px;text-align:left;font-size:11px;color:var(--ink-faint);line-height:2;letter-spacing:.04em}
+  .load-log span{display:block;opacity:0;transition:opacity .35s}
+  .load-log span.on{opacity:1}
+
+  /* report */
+  .report{padding-top:22px}
+  .dossier-head{display:flex;align-items:center;gap:13px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+  .avatar{width:52px;height:52px;border-radius:2px;object-fit:cover;border:1.5px solid var(--ink);background:#ddd;flex:0 0 auto;filter:grayscale(.35) contrast(1.05) sepia(.12)}
+  .dh-name{font-size:17px;font-weight:700;letter-spacing:.02em;overflow-wrap:anywhere}
+  .dh-meta{font-size:10.5px;color:var(--ink-faint);letter-spacing:.08em;margin-top:5px;line-height:1.6}
+
+  .type-block{padding:24px 0 6px}
+  .type-label{font-size:10.5px;letter-spacing:.28em;color:var(--red);font-weight:700;margin-bottom:12px}
+  .type-name{font-size:clamp(26px,6.4vw,38px);line-height:1.25;margin:0 0 14px;letter-spacing:.04em;font-weight:700}
+  .type-verdict{font-size:14.5px;line-height:1.95;color:var(--ink-soft);margin:0;padding-left:14px;border-left:2px solid var(--line)}
+
+  .section-h{font-size:10.5px;letter-spacing:.24em;color:var(--ink-faint);font-weight:700;margin:26px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line-soft)}
+
+  .metric{margin-bottom:18px}
+  .metric-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:8px}
+  .metric-top .k{font-size:13px;letter-spacing:.08em;color:var(--ink)}
+  .metric-top .n{font-family:ui-monospace,monospace;font-size:19px;font-weight:700;color:var(--ink);line-height:1}
+  .metric-top .n.red{color:var(--red)}
+  .metric-note{font-size:11px;color:var(--ink-faint);letter-spacing:.03em;margin-top:7px}
+  .track{height:7px;background:rgba(42,33,24,.09);position:relative;overflow:hidden;border-radius:1px}
+  .track i{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,#b8a27c,var(--ink));transition:width 1s cubic-bezier(.22,.8,.25,1)}
+  .track i.red{background:linear-gradient(90deg,#c98a7f,var(--red))}
+
+  .ring-wrap{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+  #ring{width:150px;height:150px;flex:0 0 auto}
+  .legend{list-style:none;margin:0;padding:0;flex:1;min-width:170px}
+  .legend li{display:flex;align-items:center;gap:8px;font-size:12px;padding:5px 0;border-bottom:1px dotted rgba(140,110,70,.22)}
+  .legend li:last-child{border-bottom:0}
+  .legend .dot{width:8px;height:8px;border-radius:1px;flex:0 0 auto}
+  .legend .ln{flex:1;color:var(--ink)}
+  .legend .lp{font-family:ui-monospace,monospace;font-size:11px;color:var(--ink-faint)}
+
+  .relics{list-style:none;margin:0;padding:0}
+  .relics li{display:flex;gap:11px;padding:11px 0;border-bottom:1px dotted rgba(140,110,70,.25);font-size:13px;line-height:1.7;color:var(--ink-soft);overflow-wrap:anywhere}
+  .relics li:last-child{border-bottom:0}
+  .relics .tag{flex:0 0 auto;font-size:9.5px;letter-spacing:.1em;color:var(--red);border:1px solid rgba(173,56,44,.4);padding:2px 6px;height:fit-content;margin-top:2px;border-radius:1px}
+  .relics b{color:var(--ink);font-weight:600}
+
+  .conclusion p{font-size:13.5px;line-height:2;color:var(--ink-soft);margin:0}
+  .conclusion p + p{margin-top:10px}
+
+  .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px;padding-top:20px;border-top:2px solid var(--ink)}
+  .actions .btn{flex:1 1 140px}
+
+  .toast{
+    position:fixed;left:50%;bottom:34px;transform:translate(-50%,20px);
+    background:var(--ink);color:var(--paper);font-size:13px;padding:11px 20px;border-radius:2px;
+    opacity:0;pointer-events:none;transition:.28s;z-index:99;letter-spacing:.04em;
+  }
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+
+  /* 分享卡预览 */
+  .modal{position:fixed;inset:0;background:rgba(18,14,10,.86);z-index:120;display:flex;flex-direction:column;
+    align-items:center;justify-content:flex-start;padding:24px 16px 32px;overflow-y:auto;-webkit-overflow-scrolling:touch;
+    opacity:0;pointer-events:none;transition:opacity .25s}
+  .modal.on{opacity:1;pointer-events:auto}
+  .modal img{width:100%;max-width:380px;display:block;border-radius:2px;box-shadow:0 24px 60px rgba(0,0,0,.55)}
+  .modal-actions{display:flex;gap:10px;margin-top:18px;width:100%;max-width:380px}
+  .modal-actions .btn{flex:1;border-color:rgba(244,233,211,.55);color:var(--paper)}
+  .modal-actions .btn.primary{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+  .modal-tip{margin:12px 0 0;font-size:11px;color:rgba(244,233,211,.55);letter-spacing:.05em}
+  .modal-close{position:fixed;top:14px;right:16px;width:34px;height:34px;border:1px solid rgba(244,233,211,.4);
+    background:transparent;color:var(--paper);font-size:16px;line-height:1;border-radius:50%;cursor:pointer}
+
+  footer{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font-size:10.5px;color:var(--ink-faint);line-height:1.9;letter-spacing:.04em;position:relative;z-index:2}
+  footer b{color:var(--ink-soft);font-weight:600}
+
+  @media (max-width:560px){
+    body{padding:0 0 40px}
+    .sheet{max-width:none;border-radius:0;padding:24px 18px 22px;min-height:100vh}
+    .hero{padding:26px 0 6px}
+    .hero h1{font-size:27px}
+    .steps{grid-template-columns:1fr}
+    .ring-wrap{gap:14px}
+    #ring{width:126px;height:126px}
+    .actions .btn{flex:1 1 100%}
+    .stamp{width:56px;height:56px;font-size:9.5px}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  .sheet{box-shadow:
+      0 1px 0 rgba(255,255,255,.6) inset,
+      0 34px 80px -22px rgba(40,48,60,.45),
+      0 6px 22px rgba(40,48,60,.24)}
+</style>
+</head>
+<body>
+<!-- ============ 背景：考古现场装饰层 ============ -->
+<div class="desk-decor" aria-hidden="true">
+  <svg viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <!-- 探方网格 -->
+      <pattern id="dg-grid" width="80" height="80" patternUnits="userSpaceOnUse">
+        <path d="M80,0 H0 V80" fill="none" stroke="rgba(30,36,42,0.108)" stroke-width="1"/>
+      </pattern>
+      <pattern id="dg-grid5" width="400" height="400" patternUnits="userSpaceOnUse">
+        <path d="M400,0 H0 V400" fill="none" stroke="rgba(30,36,42,0.180)" stroke-width="1"/>
+      </pattern>
+      <!-- 浮尘 / 细砂 -->
+      <pattern id="dg-dust" width="150" height="150" patternUnits="userSpaceOnUse">
+        <circle cx="22" cy="34" r="1.2" fill="rgba(30,36,42,0.216)"/>
+        <circle cx="96" cy="72" r="0.9" fill="rgba(30,36,42,0.168)"/>
+        <circle cx="58" cy="116" r="1.3" fill="rgba(30,36,42,0.144)"/>
+        <circle cx="128" cy="22" r="0.8" fill="rgba(30,36,42,0.192)"/>
+        <circle cx="18" cy="98" r="0.7" fill="rgba(30,36,42,0.144)"/>
+      </pattern>
+    </defs>
+
+    <!-- 1. 探方网格 -->
+    <rect width="1600" height="1000" fill="url(#dg-grid)"/>
+    <rect width="1600" height="1000" fill="url(#dg-grid5)"/>
+    <rect width="1600" height="1000" fill="url(#dg-dust)"/>
+
+    <!-- 2. 地层剖面（等高线） -->
+    <g fill="none" stroke="rgba(30,36,42,0.180)" stroke-width="1.6" stroke-linecap="round">
+      <path d="M-20,858 C180,836 330,882 520,866 C760,846 900,890 1120,870 C1320,852 1480,888 1620,864"/>
+      <path d="M-20,898 C200,876 350,916 540,900 C780,882 920,924 1140,904 C1340,886 1500,922 1620,898"/>
+      <path d="M-20,938 C220,916 370,950 560,934 C800,916 940,958 1160,938 C1360,920 1520,954 1620,932"/>
+      <path d="M-20,976 C240,956 390,984 580,968 C820,950 960,992 1180,972 C1380,954 1540,988 1620,966"/>
+    </g>
+    <!-- 地层间的短斜线（表示沉积层理） -->
+    <g stroke="rgba(30,36,42,0.120)" stroke-width="1.2" stroke-linecap="round">
+      <path d="M150,866 l6,26 M230,860 l6,32 M410,872 l6,24 M700,864 l6,28 M980,878 l6,22 M1240,866 l6,26"/>
+      <path d="M120,906 l6,26 M330,914 l6,22 M600,900 l6,28 M860,918 l6,20 M1140,904 l6,26 M1400,912 l6,20"/>
+    </g>
+
+    <!-- 3. 左侧深度标尺 -->
+    <g stroke="rgba(30,36,42,0.240)" stroke-width="1.4" stroke-linecap="round">
+      <path d="M60,140 V880"/>
+      <path d="M60,200 h20 M60,280 h13 M60,360 h20 M60,440 h13 M60,520 h20 M60,600 h13 M60,680 h20 M60,760 h13 M60,840 h20"/>
+    </g>
+    <g fill="rgba(30,36,42,0.312)" font-family="ui-monospace,Menlo,monospace" font-size="11" letter-spacing="1">
+      <text x="86" y="204">I</text>
+      <text x="86" y="364">II</text>
+      <text x="86" y="524">III</text>
+      <text x="86" y="684">IV</text>
+      <text x="86" y="844">V</text>
+    </g>
+
+    <!-- 4. 测绘十字点 -->
+    <g stroke="rgba(30,36,42,0.312)" stroke-width="1.4" fill="none">
+      <g transform="translate(150,120)"><path d="M-10,0 H10 M0,-10 V10"/><circle r="16"/></g>
+      <g transform="translate(1460,120)"><path d="M-10,0 H10 M0,-10 V10"/><circle r="16"/></g>
+      <g transform="translate(150,890)"><path d="M-10,0 H10 M0,-10 V10"/><circle r="16"/></g>
+      <g transform="translate(1460,890)"><path d="M-10,0 H10 M0,-10 V10"/><circle r="16"/></g>
+    </g>
+
+    <!-- 5. 出土器物线稿 -->
+    <!-- 陶罐 -->
+    <g transform="translate(300,352) scale(1.15)" fill="none" stroke="rgba(30,36,42,0.336)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M-20,-58 H20"/>
+      <path d="M-13,-58 V-44 M13,-58 V-44"/>
+      <path d="M-13,-44 C-30,-38 -34,-20 -34,-4 C-34,22 -18,40 0,40 C18,40 34,22 34,-4 C34,-20 30,-38 13,-44"/>
+      <path d="M-14,-38 C-27,-34 -34,-26 -34,-12"/>
+      <path d="M14,-38 C27,-34 34,-26 34,-12"/>
+      <path d="M-9,40 H9"/>
+    </g>
+
+    <!-- 手铲 -->
+    <g transform="translate(1312,300) rotate(24)" fill="none" stroke="rgba(30,36,42,0.312)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M-6,-54 H6 V-2 H-6 Z"/>
+      <path d="M-3,-2 V8 M3,-2 V8"/>
+      <path d="M-15,10 L0,62 L15,10 Z"/>
+    </g>
+
+    <!-- 毛刷 -->
+    <g transform="translate(288,712) rotate(-16)" fill="none" stroke="rgba(30,36,42,0.288)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M-9,-62 H9 V-8 H-9 Z"/>
+      <path d="M-12,-8 H12 V2 H-12 Z"/>
+      <path d="M-12,2 L-14,26 M-6,2 V26 M0,2 V28 M6,2 V26 M12,2 L14,26"/>
+    </g>
+
+    <!-- 罗盘 / 放大镜 -->
+    <g transform="translate(1318,706)" fill="none" stroke="rgba(30,36,42,0.288)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="0" cy="0" r="32"/>
+      <path d="M23,23 L48,48"/>
+      <path d="M-11,11 L13,-13 L5,5 Z" fill="rgba(168,130,63,0.432)"/>
+    </g>
+
+    <!-- 化石旋纹 -->
+    <g transform="translate(1348,520)" fill="none" stroke="rgba(168,130,63,0.480)" stroke-width="1.8" stroke-linecap="round">
+      <path d="M0,-6 A6,6 0 1,1 -0.1,-6"/>
+      <path d="M0,-12 A12,12 0 1,0 0.1,-12"/>
+      <path d="M0,-19 A19,19 0 1,1 -0.1,-19"/>
+      <path d="M0,-26 A26,26 0 1,0 0.1,-26"/>
+    </g>
+
+    <!-- 6. 站点编号 -->
+    <g fill="rgba(30,36,42,0.240)" font-family="ui-monospace,Menlo,monospace" font-size="10.5" letter-spacing="2">
+      <text x="150" y="158">T-01</text>
+      <text x="1420" y="158">T-02</text>
+      <text x="150" y="930">T-03</text>
+      <text x="1420" y="930">T-04</text>
+    </g>
+  </svg>
+</div>
+
+<main class="sheet">
+  <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+
+  <header class="masthead">
+    <div class="org serif">
+      GitHub 考古所
+      <span class="en mono">GITHUB ARCHAEOLOGY LAB · EST.1024</span>
+    </div>
+    <div class="stamp serif">1024<br>特别档案</div>
+  </header>
+  <div class="meta-line mono">
+    <span>ARCHIVE / PERSONALITY</span>
+    <span id="doc-id">No. ————</span>
+  </div>
+
+  <!-- ============ 输入 ============ -->
+  <section id="screen-input" class="screen">
+    <div class="hero">
+      <h1 class="serif">你的代码，<br>埋着<em>什么人格</em>？</h1>
+      <p class="lede">
+        输入 GitHub 用户名，我们翻阅你的公开地层 ——<br>
+        语言年轮、命名化石、深夜遗迹，出土一份专属《编程人格档案》。
+      </p>
+
+      <form id="dig-form" autocomplete="off">
+        <div class="input-row">
+          <span class="at mono">github.com/</span>
+          <input id="username" name="username" type="text" inputmode="text" spellcheck="false"
+                 placeholder="例如 Xxcool" maxlength="39" aria-label="GitHub 用户名">
+        </div>
+        <div class="actions-in">
+          <button class="btn primary" type="submit" id="dig-btn">开始考古</button>
+          <button class="btn ghost" type="button" id="demo-btn">看示例档案</button>
+        </div>
+      </form>
+      <div id="err-box" class="err hidden"></div>
+
+      <div class="chips">
+        <span class="lead">不想输名字？试试</span>
+        <button type="button" class="chip" data-user="torvalds">torvalds</button>
+        <button type="button" class="chip" data-user="yyx990803">yyx990803</button>
+        <button type="button" class="chip" data-user="ruanyf">ruanyf</button>
+      </div>
+
+      <p class="hint">
+        只读取 GitHub 公开数据 · 无需登录 · 不上传任何信息 · 档案在浏览器本地生成
+      </p>
+
+      <div class="howto">
+        <h4>使用方法</h4>
+        <ol class="steps">
+          <li><span class="n">STEP 01</span>输入 GitHub 用户名（就是主页地址里那串）</li>
+          <li><span class="n">STEP 02</span>等 3 秒，程序翻阅你最近推送的 100 个仓库</li>
+          <li><span class="n">STEP 03</span>点「生成分享卡」，把人格档案存成图片发出去</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 加载 ============ -->
+  <section id="screen-loading" class="screen hidden">
+    <div class="loading">
+      <div class="drill mono">DRILLING · 正在钻探</div>
+      <h3 class="load-title serif" id="load-title">翻开土层</h3>
+      <p class="load-sub" id="load-sub">正在读取公开地层……</p>
+      <div class="bar"><i id="load-bar"></i></div>
+      <div class="load-log" id="load-log"></div>
+    </div>
+  </section>
+
+  <!-- ============ 档案 ============ -->
+  <section id="screen-report" class="screen hidden">
+    <div class="report">
+      <div class="dossier-head">
+        <img id="avatar" class="avatar" alt="" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+        <div>
+          <div class="dh-name serif" id="dh-name">@—</div>
+          <div class="dh-meta mono" id="dh-meta">—</div>
+        </div>
+      </div>
+
+      <div class="type-block">
+        <div class="type-label">编 程 人 格</div>
+        <h2 class="type-name serif" id="type-name">—</h2>
+        <p class="type-verdict serif" id="type-verdict">—</p>
+      </div>
+
+      <h3 class="section-h">四 维 探 方</h3>
+      <div id="metrics"></div>
+
+      <h3 class="section-h">语 言 年 轮</h3>
+      <div class="ring-wrap">
+        <div id="ring"></div>
+        <ul class="legend" id="legend"></ul>
+      </div>
+
+      <h3 class="section-h">出 土 器 物</h3>
+      <ul class="relics" id="relics"></ul>
+
+      <h3 class="section-h">考 古 结 论</h3>
+      <div class="conclusion" id="conclusion"></div>
+
+      <div class="actions">
+        <button class="btn primary" id="share-btn">生成分享卡</button>
+        <button class="btn ghost" id="copy-btn">复制分享文案</button>
+        <button class="btn ghost" id="again-btn">再挖一个</button>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <b>说明</b>　本档案由公开 GitHub 数据实时推导，结果仅供娱乐，不构成任何专业评价。<br>
+    数据来自 GitHub REST API；若无网络或触发限流，可点「看示例档案」离线体验。<br>
+    页面不收集、不上传任何用户信息，所有计算均在你的浏览器本地完成。
+  </footer>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="分享卡预览">
+  <button class="modal-close" id="close-modal" aria-label="关闭">×</button>
+  <img id="card-img" alt="编程人格档案分享卡">
+  <div class="modal-actions">
+    <button class="btn primary" id="dl-btn">保存图片</button>
+    <button class="btn" id="dl-close">关闭</button>
+  </div>
+  <p class="modal-tip">手机端长按图片也可直接保存</p>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  /* ---------------- 常量 ---------------- */
+  const LANG_COLORS = {
+    JavaScript:"#f1e05a", TypeScript:"#3178c6", Python:"#3572A5", Vue:"#41b883",
+    HTML:"#e34c26", CSS:"#563d7c", SCSS:"#c6538c", Less:"#1d365d",
+    Java:"#b07219", Go:"#00ADD8", Rust:"#dea584", C:"#7d7d7d",
+    "C++":"#f34b7d", "C#":"#178600", Dart:"#00B4AB", Shell:"#89e051",
+    Swift:"#F05138", Kotlin:"#A97BFF", PHP:"#4F5D95", Ruby:"#701516",
+    "Jupyter Notebook":"#DA5B0B", Lua:"#4a4a8a", Makefile:"#427819",
+    Dockerfile:"#384d54", HCL:"#844FBA", "Objective-C":"#438eff", Perl:"#0298c3"
+  };
+  const FALLBACK_COLORS = ["#8c7a5e","#ad382c","#6b7f6a","#8a6f3f","#5d6b7a","#7a5d6b"];
+
+  /* 演示账号头像（内嵌，保证离线与发布后都不掉图） */
+  const DEMO_AVATAR = "data:image/jpeg;base64,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";
+
+  /* 16 型人格：N/D 夜行晨耕 · T/S 洁癖随性 · B/F 广博专精 · O/L 社交独狼 */
+  const TYPES = {
+    NTBO:{n:"夜掘·地层编年史官", v:"你把每个深夜都折进仓库，用 commit 给时间做碳十四测年。"},
+    NTBL:{n:"夜掘·孤灯拓片师",   v:"一盏灯、一个分支，你在无人处拓下自己的碑文。"},
+    NTFO:{n:"夜掘·深井考据家",   v:"别人挖一片，你只挖一口井，直到见水为止。"},
+    NTFL:{n:"夜掘·墓室守夜人",   v:"规矩、深沉、不声张，你的仓库像一座上了锁的墓室。"},
+    NSBO:{n:"夜掘·废墟拾荒王",   v:"命名随心、方向随缘，但每座废墟里都有你捡回来的宝贝。"},
+    NSBL:{n:"夜掘·野路子掘墓人", v:"没有图纸，全靠手感，挖到哪儿算哪儿，却总能挖出东西。"},
+    NSFO:{n:"夜掘·偏执炼丹师",   v:"一个仓库、一门语言、一炉火，你炼到天亮。"},
+    NSFL:{n:"夜掘·地下洞穴隐士", v:"你写了很久，只是没打算让谁看见。"},
+    DTBO:{n:"晨耕·博物馆馆长",   v:"白天开工，仓库成馆，你把自己活成了一份目录。"},
+    DTBL:{n:"晨耕·档案馆管理员", v:"规整、克制、按时收工，你的代码像被归档过三次。"},
+    DTFO:{n:"晨耕·精密修复师",   v:"窄而深，稳而准，你修的是代码，也是耐心。"},
+    DTFL:{n:"晨耕·碑文雕刻匠",   v:"一笔一划，不疾不徐，作品不多，但都立得住。"},
+    DSBO:{n:"晨耕·市集交换商",   v:"仓库多、语言杂、人来人往，你是开源集市里最会张罗的那个。"},
+    DSBL:{n:"晨耕·手工作坊主",   v:"白天开门做生意，晚上关门做手艺。"},
+    DSFO:{n:"晨耕·蒸汽朋克发明家", v:"一个念头，一堆零件，你总能组装出会动的东西。"},
+    DSFL:{n:"晨耕·老宅守门人",   v:"你不追新，只把一件事做到没人能替。"}
+  };
+
+  const BAD_NAME = /(^|[-_.])(test|tests|demo|new|final|final2|copy|temp|tmp|aaa|untitled|untitle|test1|新建|测试|练习|未命名)([-_.]|\d|$)/i;
+  const CLEAN_NAME = /^[a-z0-9]+([-_][a-z0-9]+)*$/i;
+
+  /* ---------------- DOM ---------------- */
+  const $ = id => document.getElementById(id);
+  const screens = {input:$("screen-input"), loading:$("screen-loading"), report:$("screen-report")};
+  let currentReport = null;
+
+  function show(name){
+    Object.entries(screens).forEach(([k,el]) => el.classList.toggle("hidden", k!==name));
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
+  function toast(msg){
+    const t = $("toast"); t.textContent = msg; t.classList.add("on");
+    clearTimeout(t._tid); t._tid = setTimeout(()=>t.classList.remove("on"), 2200);
+  }
+  function err(msg){
+    const b = $("err-box"); b.innerHTML = "<b>钻探中断</b>" + msg; b.classList.remove("hidden");
+  }
+  function clearErr(){ $("err-box").classList.add("hidden"); }
+
+  /* ---------------- 加载动画 ---------------- */
+  const LOAD_STEPS = [
+    ["翻开土层", "正在读取公开地层……", "GET /users/{name}"],
+    ["清点器物", "正在清点仓库与语言……", "GET /users/{name}/repos"],
+    ["比对化石", "正在比对命名与作息……", "GET /users/{name}/events"],
+    ["撰写档案", "正在碳十四测年……", "COMPILING ARCHIVE"]
+  ];
+
+  function runLoading(minMs=1500){
+    const bar = $("load-bar"), log = $("load-log"), sub = $("load-sub"), title = $("load-title");
+    bar.style.width = "0%"; log.innerHTML = ""; sub.textContent = LOAD_STEPS[0][1]; title.textContent = LOAD_STEPS[0][0];
+    LOAD_STEPS.forEach((s,i) => { const sp=document.createElement("span"); sp.textContent = "› " + s[2]; log.appendChild(sp); });
+    const spans = [...log.children];
+    spans[0].classList.add("on");
+    let i = 0;
+    const timer = setInterval(()=>{
+      i++;
+      if(i < LOAD_STEPS.length){
+        title.textContent = LOAD_STEPS[i][0];
+        sub.textContent = LOAD_STEPS[i][1];
+        spans[i].classList.add("on");
+      }
+      bar.style.width = Math.min(92, (i+1)*24) + "%";
+    }, Math.max(260, minMs/LOAD_STEPS.length));
+    return () => { clearInterval(timer); bar.style.width="100%"; };
+  }
+
+  /* ---------------- 取数 ---------------- */
+  async function fetchGithub(username){
+    const base = "https://api.github.com";
+    const [pr, rr, er] = await Promise.all([
+      fetch(base + "/users/" + encodeURIComponent(username), {headers:{"Accept":"application/vnd.github+json"}}),
+      fetch(base + "/users/" + encodeURIComponent(username) + "/repos?per_page=100&sort=pushed", {headers:{"Accept":"application/vnd.github+json"}}),
+      fetch(base + "/users/" + encodeURIComponent(username) + "/events/public?per_page=100", {headers:{"Accept":"application/vnd.github+json"}}).catch(()=>null)
+    ]);
+    if(pr.status === 404) throw new Error("NOT_FOUND");
+    if(pr.status === 403 || pr.status === 429) throw new Error("RATE_LIMIT");
+    if(!pr.ok) throw new Error("API_FAIL");
+    const profile = await pr.json();
+    const repos = rr.ok ? await rr.json() : [];
+    const events = (er && er.ok) ? await er.json().catch(()=>[]) : [];
+    return {profile, repos:Array.isArray(repos)?repos:[], events:Array.isArray(events)?events:[]};
+  }
+
+  /* ---------------- 示例数据 ---------------- */
+  function demoData(){
+    const now = Date.now();
+    const iso = d => new Date(d).toISOString();
+    const repos = [
+      ["juejin-csdn-extension","TypeScript",86,12840,"掘金文章一键同步 CSDN / 公众号草稿箱"],
+      ["app-harbor-web","Vue",31,8620,"基于 SoybeanAdmin 的安卓应用分发后台"],
+      ["xiuxian-novel","JavaScript",54,3120,"中文修仙小说阅读站"],
+      ["merge-duel","TypeScript",12,5410,"Cocos 合成小游戏"],
+      ["dm-supply-next","Vue",7,24800,"供应链数字化中台"],
+      ["datamatch-website","HTML",3,760,"公司官网"],
+      ["react-music","JavaScript",2,410,"练手音乐播放器"],
+      ["canvas-3d-dashboard","TypeScript",41,9200,"Three.js 可视化大屏"],
+      ["test","JavaScript",0,120,""],
+      ["new-folder","HTML",0,88,""],
+      ["workbuddy-checkin","Python",19,640,"自动签到脚本"],
+      ["neighbor-swap","Dart",8,5310,"邻里换物 App"],
+      ["blog","CSS",4,290,""],
+      ["final","JavaScript",0,64,""],
+      ["utils","Go",6,1430,"零散小工具"],
+      ["skill-1024","JavaScript",11,880,"1024 造物挑战作品"],
+      ["old-projects","PHP",1,2200,"大学时代的一些东西"],
+      ["untitled-game","JavaScript",3,1900,"做到一半的游戏"]
+    ].map((r,i) => ({
+      name:r[0], language:r[1], stargazers_count:r[2], size:r[3],
+      description:r[4] || null, fork:false, archived:false,
+      created_at: iso(now - (200 + i*130) * 864e5),
+      pushed_at:  iso(now - (2 + i*7) * 864e5),
+      html_url:"#"
+    }));
+    const hours = [23,0,1,22,23,0,2,21,23,1,0,22,23,23,0,1,21,23,2,0,23,22,1,23];
+    const events = hours.map((h,i) => {
+      const d = new Date(now - (i+1) * 36e5 * 7);
+      const utcH = (h - 8 + 24) % 24;
+      d.setUTCHours(utcH, 20, 0, 0);
+      return {type:"PushEvent", created_at:d.toISOString()};
+    });
+    return {
+      profile:{
+        login:"archaeo-demo", name:"演示账号", avatar_url:DEMO_AVATAR,
+        public_repos:18, followers:128, following:64,
+        created_at: iso(now - 2600*864e5), bio:"白天写业务，晚上写自己。"
+      },
+      repos, events
+    };
+  }
+
+  /* ---------------- 指标计算 ---------------- */
+  function clamp01(x){ return Math.max(0, Math.min(1, x)); }
+
+  function analyze({profile, repos, events}){
+    const own = repos.filter(r => !r.fork);
+    const sample = own.length ? own : repos;
+    const total = Math.max(1, sample.length);
+
+    /* 夜行指数：优先用活动记录，其次用各仓库最近推送时间兜底 */
+    const pushes = events.filter(e => e && e.created_at);
+    let night = 0.32, nightNote = "活跃数据不足，按中位估计", nightSrc = "none", counted = 0;
+    let nightHits = 0;
+    pushes.forEach(e => {
+      const d = new Date(e.created_at);
+      if(isNaN(d)) return;
+      const h = (d.getUTCHours() + 8) % 24;
+      counted++;
+      if(h >= 22 || h < 6) nightHits++;
+    });
+    if(counted >= 5){
+      night = nightHits / counted; nightSrc = "events";
+      nightNote = `深夜活动 ${Math.round(night*100)}% · ${counted} 条公开记录`;
+    }else{
+      const pushHours = sample.map(r => r.pushed_at).filter(Boolean)
+        .map(t => { const d = new Date(t); return isNaN(d) ? null : (d.getUTCHours() + 8) % 24; })
+        .filter(h => h !== null);
+      if(pushHours.length >= 3){
+        night = pushHours.filter(h => h >= 22 || h < 6).length / pushHours.length;
+        nightSrc = "pushed";
+        nightNote = `深夜推送 ${Math.round(night*100)}% · ${pushHours.length} 个仓库的最近推送`;
+      }
+    }
+
+    /* 命名洁癖：规范命名的仓库占比 */
+    const cleanCount = sample.filter(r => CLEAN_NAME.test(r.name || "") && !BAD_NAME.test(r.name || "")).length;
+    const tidy = cleanCount / total;
+
+    /* 涉猎广度：语言种类 + 仓库规模 */
+    const langs = {};
+    sample.forEach(r => { if(r.language) langs[r.language] = (langs[r.language]||0) + 1; });
+    const langList = Object.entries(langs).sort((a,b)=>b[1]-a[1]);
+    const uniqLangs = langList.length;
+    const broad = clamp01(0.62 * (uniqLangs/6) + 0.38 * (sample.length/30));
+
+    /* 开源社交：粉丝 + 星标（对数压缩） */
+    const stars = sample.reduce((s,r)=> s + (r.stargazers_count||0), 0);
+    const social = clamp01(Math.log10(1 + (profile.followers||0) + stars) / 3.1);
+
+    const metrics = [
+      {key:"夜行指数", val:night,  note:nightNote, red:night>=0.5},
+      {key:"命名洁癖", val:tidy,   note: `${cleanCount}/${total} 个仓库命名规范`, red:false},
+      {key:"涉猎广度", val:broad,  note: `${uniqLangs} 种语言 · ${sample.length} 个仓库`, red:false},
+      {key:"开源社交", val:social, note: `${profile.followers||0} 关注者 · ${stars} 星标`, red:false}
+    ];
+
+    /* 人格编码 */
+    const code =
+      (night  > 0.35 ? "N" : "D") +
+      (tidy   > 0.55 ? "T" : "S") +
+      (broad  > 0.50 ? "B" : "F") +
+      (social > 0.40 ? "O" : "L");
+    const type = TYPES[code] || TYPES.DTFL;
+
+    /* 语言年轮 */
+    let ring = langList.slice(0,5).map(([name,count],i)=>({
+      name, count, color: LANG_COLORS[name] || FALLBACK_COLORS[i % FALLBACK_COLORS.length]
+    }));
+    if(langList.length > 5){
+      const restCount = langList.slice(5).reduce((s,x)=>s+x[1],0);
+      ring.push({name:"其他", count:restCount, color:"#b9ab92"});
+    }
+    const ringTotal = ring.reduce((s,x)=>s+x.count,0) || 1;
+    ring.forEach(x => x.pct = x.count / ringTotal);
+    if(!ring.length) ring = [{name:"未标注语言", count:1, pct:1, color:"#b9ab92"}];
+    /* 最大余数法取整，保证百分比合计恰为 100 */
+    const rawPct = ring.map(x => x.pct * 100);
+    const shownPct = rawPct.map(Math.floor);
+    const leftPct = 100 - shownPct.reduce((a,b)=>a+b,0);
+    rawPct.map((v,i)=>({i, frac:v-Math.floor(v)}))
+          .sort((a,b)=>b.frac-a.frac)
+          .forEach((o,k)=>{ if(k < leftPct) shownPct[o.i]++; });
+    ring.forEach((x,i)=>{ x.pctText = shownPct[i]; });
+
+    /* 出土器物 */
+    const relics = [];
+    const dated = sample.filter(r => r.created_at).sort((a,b)=> new Date(a.created_at) - new Date(b.created_at));
+    if(dated.length){
+      const oldest = dated[0];
+      const yrs = Math.max(1, Math.round((Date.now() - new Date(oldest.created_at)) / 3.156e10));
+      relics.push({tag:"最古老层", html:`<b>${esc(oldest.name)}</b> —— 距今约 ${yrs} 年，是你目前可考的最早地层。`});
+    }
+    const heaviest = sample.slice().sort((a,b)=>(b.size||0)-(a.size||0))[0];
+    if(heaviest && heaviest.size){
+      const mb = (heaviest.size/1024).toFixed(1);
+      relics.push({tag:"最重藏品", html:`<b>${esc(heaviest.name)}</b> —— 体积 ${mb} MB，${mb>50?"搬运时请借助工具":"保存完好，未见坍塌"}。`});
+    }
+    const starTop = sample.slice().sort((a,b)=>(b.stargazers_count||0)-(a.stargazers_count||0))[0];
+    if(starTop && starTop.stargazers_count > 0){
+      relics.push({tag:"最亮展品", html:`<b>${esc(starTop.name)}</b> —— 收获 ${starTop.stargazers_count} 颗星，是本馆的镇馆之宝。`});
+    }
+    const badOne = sample.find(r => BAD_NAME.test(r.name||""));
+    relics.push(badOne
+      ? {tag:"命名化石", html:`<b>${esc(badOne.name)}</b> —— 命名风格令人动容，疑似出土于凌晨三点。`}
+      : {tag:"命名化石", html:`全馆命名规范，未发现 <b>final2</b>、<b>新建文件夹</b> 一类遗迹。`}
+    );
+
+    /* 结论 */
+    const concl = [
+      `从地层剖面看，你是一位典型的<b>${type.n.replace("·","·")}</b>。${
+        night>0.5 ? "超过一半的推送发生在深夜，考古队建议你留意睡眠层位。" :
+        night<0.2 ? "你的作息干净得像是被人为整理过，白天的土比夜里扎实。" :
+        "你的提交时间分布匀称，白天与黑夜都有留下痕迹。"
+      }`,
+      `语言年轮显示，<b>${ring[0].name}</b> 占据了你 ${ring[0].pctText}% 的藏品${
+        ring[1] ? `，其次是 <b>${ring[1].name}</b>` : ""
+      }。${broad>0.5 ? "涉猎面广，属于多文明交汇地带。" : "专精度高，属于单点深挖型遗址。"}`,
+      `${tidy>0.6 ? "命名体系严谨，后代开发者能顺利读懂你的地层。" : "命名略显随性，建议为后世留下一份对照表。"}${
+        social>0.45 ? " 同时你在开源聚落中颇有人望，星标与关注者构成了你的社交地层。" : ""
+      }`
+    ];
+
+    return {
+      login: profile.login || "", displayName: profile.name || profile.login || "",
+      avatar: profile.avatar_url || "", bio: profile.bio || "",
+      createdAt: profile.created_at,
+      publicRepos: profile.public_repos ?? sample.length,
+      sampled: sample.length,
+      code, type, metrics, ring, relics, concl,
+      docId: "CA-" + (profile.login || "demo").slice(0,6).toUpperCase() + "-" + String(1024 + (sample.length*7 % 900)),
+      isDemo: !!profile.__demo
+    };
+  }
+
+  /* ---------------- 渲染 ---------------- */
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+  function renderReport(rep){
+    currentReport = rep;
+    $("doc-id").textContent = "No. " + rep.docId;
+
+    const av = $("avatar");
+    if(rep.avatar){ av.src = rep.avatar; av.style.visibility = "visible"; }
+    else { av.removeAttribute("src"); av.style.visibility = "hidden"; }
+
+    $("dh-name").textContent = "@" + rep.login + (rep.displayName && rep.displayName !== rep.login ? "　" + rep.displayName : "");
+    const since = rep.createdAt ? new Date(rep.createdAt).getFullYear() : "—";
+    $("dh-meta").textContent = `采样 ${rep.sampled} 个仓库 · ${rep.publicRepos} 个公开仓库 · 入馆 ${since}` + (rep.isDemo ? " · 示例档案" : "");
+
+    $("type-name").textContent = rep.type.n;
+    $("type-verdict").textContent = "「" + rep.type.v + "」";
+
+    /* 四维 */
+    $("metrics").innerHTML = rep.metrics.map(m => `
+      <div class="metric">
+        <div class="metric-top">
+          <span class="k">${esc(m.key)}</span>
+          <span class="n ${m.red?"red":""}">${Math.round(m.val*100)}</span>
+        </div>
+        <div class="track"><i class="${m.red?"red":""}" data-w="${Math.max(3, Math.round(m.val*100))}"></i></div>
+        <div class="metric-note">${esc(m.note)}</div>
+      </div>`).join("");
+
+    /* 年轮 */
+    const R = 62, C = 2 * Math.PI * R, cx = 80, cy = 80;
+    let off = 0, arcs = "";
+    rep.ring.forEach(l => {
+      const len = C * l.pct;
+      arcs += `<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${l.color}"
+        stroke-width="24" stroke-dasharray="${Math.max(0.6,len-1.6)} ${C}" stroke-dashoffset="${-off}"
+        transform="rotate(-90 ${cx} ${cy})" />`;
+      off += len;
+    });
+    $("ring").innerHTML = `<svg viewBox="0 0 160 160" width="100%" height="100%" role="img" aria-label="语言分布年轮">
+      ${arcs}
+      <circle cx="${cx}" cy="${cy}" r="${R-13}" fill="#f4e9d3" stroke="rgba(42,33,24,.12)" />
+      <text x="${cx}" y="${cy-2}" text-anchor="middle" font-size="19" font-family="ui-monospace,monospace" fill="#2a2118">${rep.sampled}</text>
+      <text x="${cx}" y="${cy+15}" text-anchor="middle" font-size="8.5" letter-spacing="1.5" fill="#8d7d65">REPOS</text>
+    </svg>`;
+
+    $("legend").innerHTML = rep.ring.map(l => `
+      <li>
+        <span class="dot" style="background:${l.color}"></span>
+        <span class="ln">${esc(l.name)}</span>
+        <span class="lp">${l.pctText}%</span>
+      </li>`).join("");
+
+    /* 器物 */
+    $("relics").innerHTML = rep.relics.map(r => `<li><span class="tag">${esc(r.tag)}</span><span>${r.html}</span></li>`).join("");
+
+    /* 结论 */
+    $("conclusion").innerHTML = rep.concl.map(p => `<p>${p}</p>`).join("");
+
+    show("report");
+
+    requestAnimationFrame(() => {
+      document.querySelectorAll(".track i").forEach(el => { el.style.width = el.dataset.w + "%"; });
+    });
+  }
+
+  /* ---------------- 分享卡 ---------------- */
+  function drawShareCard(rep){
+    const W = 1080, H = 1440, P = 72;
+    const c = document.createElement("canvas");
+    c.width = W; c.height = H;
+    const x = c.getContext("2d");
+
+    /* 纸 */
+    x.fillStyle = "#f4e9d3"; x.fillRect(0,0,W,H);
+    const g = x.createLinearGradient(0,0,W,H);
+    g.addColorStop(0,"rgba(255,255,255,.45)"); g.addColorStop(.5,"rgba(244,233,211,0)"); g.addColorStop(1,"rgba(196,176,140,.35)");
+    x.fillStyle = g; x.fillRect(0,0,W,H);
+    x.strokeStyle = "rgba(140,110,70,.035)"; x.lineWidth = 1;
+    for(let i=0;i<160;i++){
+      const yy = (i*6.5 + (i*137%11)) % H;
+      x.beginPath(); x.moveTo(0,yy); x.lineTo(W,yy); x.stroke();
+    }
+    /* 双线边框 */
+    x.strokeStyle = "#b9a481"; x.lineWidth = 3; x.strokeRect(38,38,W-76,H-76);
+    x.strokeStyle = "rgba(185,164,129,.55)"; x.lineWidth = 1; x.strokeRect(50,50,W-100,H-100);
+
+    const serif = '"Songti SC","STSong","SimSun",serif';
+    const mono  = 'ui-monospace,"SF Mono",Menlo,Consolas,monospace';
+
+    /* 页眉 */
+    x.fillStyle = "#2a2118"; x.font = `600 30px ${serif}`; x.textBaseline = "alphabetic";
+    x.fillText("GitHub 考古所", P, 118);
+    x.fillStyle = "#8d7d65"; x.font = `12px ${mono}`;
+    x.fillText("GITHUB ARCHAEOLOGY LAB", P, 142);
+    x.textAlign = "right";
+    x.fillText("ARCHIVE  " + rep.docId, W-P, 118);
+    x.fillText("1024 · 特别档案", W-P, 142);
+    x.textAlign = "left";
+    x.strokeStyle = "#2a2118"; x.lineWidth = 3;
+    x.beginPath(); x.moveTo(P,168); x.lineTo(W-P,168); x.stroke();
+
+    /* 档案照 */
+    const phS = 118, phX = W - P - phS, phY = 178;
+    const avImg = (cardAvatar && cardAvatar.naturalWidth) ? cardAvatar : null;
+    const isDataAvatar = !!avImg;
+    x.save();
+    x.beginPath(); x.rect(phX, phY, phS, phS); x.clip();
+    x.fillStyle = "#e7dabe"; x.fillRect(phX, phY, phS, phS);
+    if(avImg){
+      const sc = Math.max(phS/avImg.naturalWidth, phS/avImg.naturalHeight);
+      const dw = avImg.naturalWidth*sc, dh = avImg.naturalHeight*sc;
+      /* 统一做旧色调，让彩色头像也融进档案纸 */
+      try{ x.filter = "grayscale(40%) sepia(22%) contrast(104%) brightness(97%)"; }catch(e){}
+      x.drawImage(avImg, phX + (phS-dw)/2, phY + (phS-dh)/2, dw, dh);
+      try{ x.filter = "none"; }catch(e){}
+    }else{
+      const ini = (rep.login || "?").slice(0,1).toUpperCase();
+      x.fillStyle = "rgba(92,79,61,.55)";
+      x.textAlign = "center"; x.textBaseline = "middle";
+      x.font = `700 46px ${mono}`;
+      x.fillText(ini, phX + phS/2, phY + phS/2 + 3);
+      x.textAlign = "left"; x.textBaseline = "alphabetic";
+    }
+    x.restore();
+    x.strokeStyle = isDataAvatar ? "#2a2118" : "rgba(42,33,24,.38)";
+    x.lineWidth = isDataAvatar ? 2 : 1.5;
+    x.strokeRect(phX, phY, phS, phS);
+
+    /* 账号行 */
+    x.fillStyle = "#2a2118"; x.font = `600 28px ${serif}`;
+    x.fillText(ellipsis(x, "@" + rep.login, phX - P - 26), P, 214);
+    x.fillStyle = "#8d7d65"; x.font = `14px ${mono}`;
+    x.fillText(`采样 ${rep.sampled} 个仓库 · 入馆 ${rep.createdAt?new Date(rep.createdAt).getFullYear():"—"}`, P, 242);
+
+    /* 人格 */
+    x.fillStyle = "#ad382c"; x.font = `600 15px ${mono}`;
+    x.fillText("编 程 人 格", P, 312);
+    x.fillStyle = "#2a2118";
+    const nameSize = rep.type.n.length > 9 ? 60 : 72;
+    x.font = `700 ${nameSize}px ${serif}`;
+    x.fillText(rep.type.n, P, 396);
+
+    /* 判词 */
+    x.fillStyle = "#5f5140"; x.font = `28px ${serif}`;
+    let vy = 452;
+    wrap(x, "「" + rep.type.v + "」", W - P*2 - 20).slice(0,2).forEach(line => {
+      x.fillText(line, P, vy); vy += 44;
+    });
+
+    const rule = yy => {
+      x.strokeStyle = "rgba(201,183,149,.95)"; x.lineWidth = 1;
+      x.beginPath(); x.moveTo(P,yy); x.lineTo(W-P,yy); x.stroke();
+    };
+
+    /* 四维 */
+    rule(548);
+    x.fillStyle = "#8d7d65"; x.font = `600 14px ${mono}`;
+    x.fillText("四 维 探 方", P, 586);
+
+    let my = 636;
+    rep.metrics.forEach(m => {
+      x.fillStyle = "#2a2118"; x.font = `500 25px ${serif}`;
+      x.fillText(m.key, P, my);
+      x.textAlign = "right"; x.font = `700 25px ${mono}`;
+      x.fillStyle = m.red ? "#ad382c" : "#2a2118";
+      x.fillText(String(Math.round(m.val*100)), W-P, my);
+      x.textAlign = "left";
+      const ty = my + 14, tw = W - P*2, th = 9;
+      x.fillStyle = "rgba(42,33,24,.10)"; x.fillRect(P, ty, tw, th);
+      if(m.val > 0.015){
+        x.fillStyle = m.red ? "#ad382c" : "#2a2118";
+        x.fillRect(P, ty, tw * Math.max(.03, m.val), th);
+      }
+      my += 68;
+    });
+
+    /* 语言年轮 */
+    rule(900);
+    x.fillStyle = "#8d7d65"; x.font = `600 14px ${mono}`;
+    x.fillText("语 言 年 轮", P, 938);
+
+    const cx = 158, cy = 1058, R = 76, SW = 30, CIR = 2*Math.PI*R;
+    x.beginPath(); x.arc(cx, cy, R, 0, Math.PI*2);
+    x.strokeStyle = "rgba(42,33,24,.07)"; x.lineWidth = SW; x.stroke();
+    let off = 0;
+    rep.ring.forEach(l => {
+      const a0 = -Math.PI/2 + (off/CIR)*Math.PI*2;
+      const a1 = a0 + (CIR*l.pct/CIR)*Math.PI*2;
+      x.beginPath(); x.arc(cx, cy, R, a0, a1);
+      x.strokeStyle = l.color; x.lineWidth = SW; x.stroke();
+      off += CIR * l.pct;
+    });
+    x.beginPath(); x.arc(cx, cy, R-SW/2-1, 0, Math.PI*2);
+    x.fillStyle = "#f4e9d3"; x.fill();
+    x.textAlign = "center";
+    x.fillStyle = "#2a2118"; x.font = `700 34px ${mono}`;
+    x.fillText(String(rep.sampled), cx, cy+8);
+    x.fillStyle = "#8d7d65"; x.font = `11px ${mono}`;
+    x.fillText("REPOS", cx, cy+30);
+    x.textAlign = "left";
+
+    const legendItems = rep.ring.slice(0,6);
+    const legendGap = legendItems.length >= 6 ? 30 : 36;
+    let ly = legendItems.length >= 6 ? 984 : 992;
+    legendItems.forEach(l => {
+      x.fillStyle = l.color; x.fillRect(288, ly-12, 13, 13);
+      x.fillStyle = "#2a2118"; x.font = `400 22px ${serif}`;
+      x.fillText(l.name, 314, ly);
+      x.textAlign = "right"; x.fillStyle = "#8d7d65"; x.font = `400 20px ${mono}`;
+      x.fillText(l.pctText + "%", W-P, ly);
+      x.textAlign = "left";
+      ly += legendGap;
+    });
+
+    /* 出土器物 */
+    rule(1170);
+    x.fillStyle = "#8d7d65"; x.font = `600 14px ${mono}`;
+    x.fillText("出 土 器 物", P, 1202);
+
+    const relicRight = W - P - 112;
+    let ry = 1238;
+    rep.relics.slice(0,2).forEach(r => {
+      const plain = r.html.replace(/<[^>]+>/g,"");
+      x.fillStyle = "#ad382c"; x.font = `600 20px ${serif}`;
+      x.fillText(r.tag, P, ry);
+      const tagW = x.measureText(r.tag).width;
+      x.fillStyle = "#5f5140"; x.font = `22px ${serif}`;
+      x.fillText(ellipsis(x, plain, relicRight - (P + tagW + 18)), P + tagW + 18, ry);
+      ry += 44;
+    });
+
+    /* 页脚 */
+    const fy = H - 92;
+    x.strokeStyle = "rgba(42,33,24,.55)"; x.lineWidth = 1;
+    x.beginPath(); x.moveTo(P, fy-34); x.lineTo(W-P, fy-34); x.stroke();
+    x.fillStyle = "#5f5140"; x.font = `20px ${mono}`;
+    x.fillText("#WorkBuddy  #1024程序员节", P, fy);
+    x.fillStyle = "#8d7d65"; x.font = `15px ${mono}`;
+    x.fillText("github.com/" + rep.login + "　·　GitHub 考古 · 编程人格档案", P, fy+28);
+
+    /* 红章 */
+    const s = 76, sx = W - P - 84, sy = 1198;
+    x.save(); x.translate(sx+s/2, sy+s/2); x.rotate(-7/180*Math.PI);
+    x.strokeStyle = "#ad382c"; x.lineWidth = 4; x.strokeRect(-s/2,-s/2,s,s);
+    x.strokeRect(-s/2+7,-s/2+7,s-14,s-14);
+    x.fillStyle = "#ad382c"; x.textAlign = "center"; x.font = `700 21px ${serif}`;
+    x.fillText("代", -16, -6); x.fillText("码", 16, -6);
+    x.fillText("考", -16, 22); x.fillText("古", 16, 22);
+    x.restore();
+    x.textAlign = "left";
+
+    return c;
+  }
+
+  function ellipsis(ctx, text, maxW){
+    if(ctx.measureText(text).width <= maxW) return text;
+    let s = String(text);
+    while(s.length && ctx.measureText(s + "…").width > maxW) s = s.slice(0, -1);
+    return s + "…";
+  }
+
+  function wrap(ctx, text, maxW){
+    const lines = []; let cur = "";
+    for(const ch of String(text)){
+      const test = cur + ch;
+      if(ctx.measureText(test).width > maxW && cur){ lines.push(cur); cur = ch; }
+      else cur = test;
+    }
+    if(cur) lines.push(cur);
+    return lines;
+  }
+
+  /* ---------------- 事件 ---------------- */
+  let busy = false;
+
+  async function dig(username, opts={}){
+    if(busy) return;
+    busy = true;
+    clearErr();
+    $("dig-btn").disabled = true;
+    show("loading");
+    const stop = runLoading(1600);
+
+    const t0 = Date.now();
+    let rep, notice = "";
+    try{
+      if(opts.demo){
+        await new Promise(r => setTimeout(r, 200));
+        const d = demoData(); d.profile.__demo = true;
+        rep = analyze(d);
+        notice = "已载入示例档案";
+      } else {
+        const data = await fetchGithub(username);
+        rep = analyze(data);
+        if(!data.repos.length){
+          notice = "该账号暂无公开仓库，档案基于有限数据生成";
+        }
+      }
+    }catch(e){
+      stop(); busy = false; $("dig-btn").disabled = false;
+      show("input");
+      if(e.message === "NOT_FOUND"){
+        err(`找不到 GitHub 用户「${esc(username)}」。<br>请检查拼写，或试试「看示例档案」。`);
+      }else if(e.message === "RATE_LIMIT"){
+        err("GitHub 接口触发限流（匿名每小时 60 次），请稍后再试。<br>你也可以先看示例档案。");
+      }else{
+        err("读取公开数据失败，可能是网络或接口波动。<br>请稍后重试，或先看示例档案。");
+      }
+      return;
+    }
+
+    const wait = Math.max(0, 1700 - (Date.now() - t0));
+    setTimeout(() => {
+      stop(); busy = false; $("dig-btn").disabled = false;
+      renderReport(rep);
+      if(notice) toast(notice);
+    }, wait);
+  }
+
+  $("dig-form").addEventListener("submit", e => {
+    e.preventDefault();
+    const v = $("username").value.trim().replace(/^https?:\/\/(www\.)?github\.com\//i,"").replace(/\/+$/,"").split(/[?#]/)[0];
+    if(!v){ $("username").focus(); return; }
+    $("username").value = v;
+    dig(v);
+  });
+
+  $("demo-btn").addEventListener("click", () => dig("", {demo:true}));
+
+  document.querySelectorAll(".chip").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const u = btn.dataset.user;
+      $("username").value = u;
+      dig(u);
+    });
+  });
+
+  $("again-btn").addEventListener("click", () => {
+    show("input");
+    $("doc-id").textContent = "No. ————";
+    $("username").value = "";
+    clearErr();
+  });
+
+  let cardUrl = null, cardBlob = null, cardAvatar = null;
+  const avatarCache = new Map();
+
+  /* GitHub 头像支持 CORS（avatars.githubusercontent.com 返回 *），
+     用 anonymous 方式预加载后即可画进 canvas，且不会污染画布 */
+  function preloadAvatar(url){
+    return new Promise(resolve => {
+      if(!url) return resolve(null);
+      if(avatarCache.has(url)) return resolve(avatarCache.get(url));
+      let settled = false;
+      const finish = v => { if(settled) return; settled = true; avatarCache.set(url, v); resolve(v); };
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => finish(img);
+      img.onerror = () => finish(null);
+      img.src = url;
+      setTimeout(() => finish(null), 3000);
+    });
+  }
+
+  function openShareCard(){
+    if(!currentReport) return;
+    const rep = currentReport;
+    const btn = $("share-btn");
+    if(btn.dataset.busy) return;
+    btn.dataset.busy = "1";
+    btn.textContent = "生成中…";
+
+    const done = blob => {
+      btn.dataset.busy = ""; btn.textContent = "生成分享卡";
+      if(!blob){ toast("生成失败，请重试"); return; }
+      if(cardUrl) URL.revokeObjectURL(cardUrl);
+      cardBlob = blob;
+      cardUrl = URL.createObjectURL(blob);
+      $("card-img").src = cardUrl;
+      $("modal").classList.add("on");
+      document.body.style.overflow = "hidden";
+    };
+
+    preloadAvatar(rep.avatar).then(img => {
+      cardAvatar = img;
+      let canvas;
+      try{ canvas = drawShareCard(rep); }
+      catch(e){ btn.dataset.busy=""; btn.textContent="生成分享卡"; toast("生成失败，请重试"); return; }
+      try{
+        canvas.toBlob(done, "image/png");
+      }catch(e){
+        /* 极端情况（画布被污染）→ 去掉头像重画一次 */
+        cardAvatar = null;
+        try{ drawShareCard(rep).toBlob(done, "image/png"); }
+        catch(_){ btn.dataset.busy=""; btn.textContent="生成分享卡"; toast("生成失败，请重试"); }
+      }
+    });
+  }
+
+  function closeShareCard(){
+    $("modal").classList.remove("on");
+    document.body.style.overflow = "";
+  }
+
+  $("share-btn").addEventListener("click", openShareCard);
+
+  $("dl-btn").addEventListener("click", () => {
+    if(!cardBlob) return;
+    const a = document.createElement("a");
+    a.href = cardUrl;
+    a.download = `编程人格档案-${(currentReport && currentReport.login) || "mine"}.png`;
+    document.body.appendChild(a); a.click(); a.remove();
+    toast("已保存，去发吧");
+  });
+
+  $("close-modal").addEventListener("click", closeShareCard);
+  $("dl-close").addEventListener("click", closeShareCard);
+  $("modal").addEventListener("click", e => { if(e.target.id === "modal") closeShareCard(); });
+  document.addEventListener("keydown", e => { if(e.key === "Escape") closeShareCard(); });
+
+  $("copy-btn").addEventListener("click", async () => {
+    if(!currentReport) return;
+    const r = currentReport;
+    const text =
+`我的编程人格是【${r.type.n}】
+${r.type.v}
+
+四维探方：${r.metrics.map(m=>`${m.key} ${Math.round(m.val*100)}`).join(" / ")}
+语言年轮：${r.ring.slice(0,3).map(l=>`${l.name} ${l.pctText}%`).join("、")}
+
+输入 GitHub 用户名，测测你的代码里埋着什么人格 →
+${location.href}
+
+#WorkBuddy #1024程序员节`;
+    try{
+      await navigator.clipboard.writeText(text);
+      toast("文案已复制");
+    }catch(e){
+      const ta = document.createElement("textarea");
+      ta.value = text; ta.style.position="fixed"; ta.style.opacity="0";
+      document.body.appendChild(ta); ta.select();
+      try{ document.execCommand("copy"); toast("文案已复制"); }
+      catch(_){ toast("复制失败，请手动选择"); }
+      ta.remove();
+    }
+  });
+
+  /* 初始文档编号 */
+  $("doc-id").textContent = "No. ————";
+
+  /* 直达示例档案：index.html#demo */
+  if(location.hash === "#demo" || new URLSearchParams(location.search).has("demo")){
+    setTimeout(()=>dig("", {demo:true}), 60);
+  }
+  /* 直达某人档案：index.html?u=用户名（可分享） */
+  const qsUser = new URLSearchParams(location.search).get("u");
+  if(qsUser){
+    $("username").value = qsUser;
+    setTimeout(()=>dig(qsUser), 60);
+  }
+})();
+</script>
+</body>
+</html>
