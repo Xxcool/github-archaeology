@@ -213,14 +213,152 @@
   .modal.on{opacity:1;pointer-events:auto}
   .modal img{width:100%;max-width:380px;display:block;border-radius:2px;box-shadow:0 24px 60px rgba(0,0,0,.55)}
   .modal-actions{display:flex;gap:10px;margin-top:18px;width:100%;max-width:380px}
+  .card-tabs{display:flex;gap:8px;margin:0 0 16px;width:100%;max-width:380px;justify-content:center}
+  .card-tabs button{
+    flex:1;padding:9px 6px;font:inherit;font-size:11.5px;letter-spacing:.1em;cursor:pointer;
+    background:transparent;border:1px solid rgba(244,233,211,.35);color:rgba(244,233,211,.7);border-radius:2px;
+    transition:.2s;
+  }
+  .card-tabs button:hover{border-color:rgba(244,233,211,.6);color:var(--paper)}
+  .card-tabs button.on{background:var(--paper);color:var(--ink);border-color:var(--paper);font-weight:600}
   .modal-actions .btn{flex:1;border-color:rgba(244,233,211,.55);color:var(--paper)}
   .modal-actions .btn.primary{background:var(--paper);color:var(--ink);border-color:var(--paper)}
   .modal-tip{margin:12px 0 0;font-size:11px;color:rgba(244,233,211,.55);letter-spacing:.05em}
   .modal-close{position:fixed;top:14px;right:16px;width:34px;height:34px;border:1px solid rgba(244,233,211,.4);
     background:transparent;color:var(--paper);font-size:16px;line-height:1;border-radius:50%;cursor:pointer}
 
-  footer{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font-size:10.5px;color:var(--ink-faint);line-height:1.9;letter-spacing:.04em;position:relative;z-index:2}
-  footer b{color:var(--ink-soft);font-weight:600}
+  /* 探方剖面 */
+  .strata-axis{display:flex;justify-content:space-between;font-size:9px;letter-spacing:.18em;color:var(--ink-faint);
+    padding:0 2px 7px;border-bottom:1px solid var(--line-soft);margin-bottom:0}
+  .strata{margin:0;display:flex;flex-direction:column-reverse;border-left:2px solid var(--ink);position:relative}
+  .stratum{
+    position:relative;display:flex;align-items:center;gap:9px;
+    height:var(--h);min-height:17px;padding:0 9px;cursor:pointer;
+    border-bottom:1px solid rgba(42,33,24,.16);overflow:hidden;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.34), inset 0 -1px 0 rgba(60,45,28,.14);
+    transition:filter .2s;
+  }
+  .stratum:last-child{border-bottom:0}
+  .stratum::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      repeating-linear-gradient(178deg, rgba(255,255,255,.09) 0 1px, transparent 1px 5px),
+      repeating-linear-gradient(92deg, rgba(80,60,38,.045) 0 1px, transparent 1px 8px);
+  }
+  .stratum:hover{filter:brightness(1.05)}
+  .stratum.on{box-shadow:inset 3px 0 0 var(--red), inset 0 1px 0 rgba(255,255,255,.34)}
+  .stratum.on .sy{color:var(--red)}
+  .stratum .sy{font-family:ui-monospace,monospace;font-size:10px;letter-spacing:.05em;color:rgba(20,16,12,.7);flex:0 0 auto;position:relative;z-index:1}
+  .stratum .sn{font-size:9.5px;letter-spacing:.06em;color:rgba(20,16,12,.45);margin-left:auto;flex:0 0 auto;position:relative;z-index:1}
+  .stratum.gap{background:rgba(255,255,255,.42);border-bottom:1px dashed rgba(42,33,24,.18);cursor:default;box-shadow:none}
+  .stratum.gap::after{display:none}
+  .stratum.gap .sy{color:var(--ink-faint);font-size:10px;letter-spacing:.02em}
+  .stratum.gap .gline{flex:1;height:0;border-top:1px dashed rgba(173,56,44,.45)}
+  .stratum.gap .sn{color:var(--red);opacity:.85;letter-spacing:.2em;font-size:8.5px;margin-left:0}
+  .strata-cap{font-size:11px;line-height:1.85;color:var(--ink-faint);margin-top:10px;letter-spacing:.02em;min-height:34px}
+  .strata-cap b{color:var(--ink-soft);font-weight:600}
+  .strata-cap em{font-style:normal;color:var(--red)}
+
+  /* 遗物笔记 */
+  .relics li.relic{align-items:flex-start;cursor:pointer}
+  .relic-body{flex:1;min-width:0}
+  .relic-txt{font-size:13px;line-height:1.7;color:var(--ink-soft)}
+  .relic-state{
+    display:inline-block;font-size:9px;letter-spacing:.1em;padding:1px 5px;margin-left:6px;
+    border-radius:1px;vertical-align:1px;white-space:nowrap;
+    border:1px solid rgba(42,33,24,.28);color:var(--ink-soft);background:rgba(42,33,24,.045);
+  }
+  .relic-state.warn{border-color:rgba(173,56,44,.45);color:var(--red);background:rgba(173,56,44,.055)}
+  .relic-state.dim{border-color:rgba(42,33,24,.18);color:var(--ink-faint);background:transparent}
+  .relic-note{
+    max-height:0;overflow:hidden;opacity:0;transition:max-height .32s ease, opacity .26s ease, margin .3s;
+    font-size:11px;line-height:1.85;color:var(--ink-faint);
+  }
+  .relic.open .relic-note{max-height:200px;opacity:1;margin-top:7px}
+  .relic-note .nl{font-family:ui-monospace,monospace;font-size:10px;letter-spacing:.03em;color:var(--ink-soft);display:block}
+  .relic-note .nb{margin-top:5px;padding-left:9px;border-left:1px solid rgba(173,56,44,.3);color:var(--ink-soft)}
+  .relic-cv{flex:0 0 auto;font-size:11px;color:var(--ink-faint);margin-top:3px;transition:transform .25s}
+  .relic.open .relic-cv{transform:rotate(90deg);color:var(--red)}
+
+  /* 双人对挖 */
+  .vs-h{font-size:clamp(22px,5.4vw,30px);margin:20px 0 8px;letter-spacing:.14em;font-weight:700}
+  .vs-sub{font-size:13px;color:var(--ink-soft);line-height:1.9;margin:0 0 20px;padding-left:12px;border-left:2px solid var(--line)}
+  .vs-entry{font-size:12px;color:var(--ink-faint);margin:14px 0 0;letter-spacing:.03em}
+  .linkish{background:none;border:0;padding:0;font:inherit;color:var(--red);cursor:pointer;border-bottom:1px dotted rgba(173,56,44,.5);letter-spacing:.04em}
+  #vs-form .input-row{margin-bottom:10px}
+  #vs-form .at{min-width:52px}
+  .vs-head{display:flex;align-items:stretch;gap:10px;margin:24px 0 6px}
+  .vs-person{flex:1;display:flex;gap:9px;align-items:center;min-width:0;padding:11px 10px;border:1px solid var(--line);background:rgba(255,255,255,.34)}
+  .vs-person img{width:38px;height:38px;flex:0 0 auto;object-fit:cover;border-radius:2px;border:1.5px solid var(--ink);filter:grayscale(.4) contrast(1.05) sepia(.12);background:#ddd}
+  .vs-person .vp-n{font-size:12.5px;font-weight:700;letter-spacing:.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .vs-person .vp-t{font-size:10px;color:var(--ink-faint);letter-spacing:.05em;margin-top:3px;line-height:1.5}
+  .vs-person.b{border-color:rgba(173,56,44,.4);background:rgba(173,56,44,.045)}
+  .vs-mid{display:flex;align-items:center;font-size:9.5px;letter-spacing:.16em;color:var(--ink-faint);padding:0 1px}
+  .vs-metrics{margin-top:18px}
+  .vs-metric{margin-bottom:15px}
+  .vs-metric .vs-k{font-size:11px;letter-spacing:.12em;color:var(--ink-faint);margin-bottom:6px;text-align:center}
+  .vs-line{display:flex;align-items:center;gap:8px;height:15px;margin-bottom:4px}
+  .vs-line .vt{height:7px;background:rgba(42,33,24,.08);flex:1;position:relative;overflow:hidden}
+  .vs-line .vt i{position:absolute;top:0;bottom:0;width:0;transition:width .9s cubic-bezier(.22,.8,.25,1)}
+  .vs-line.a .vt i{left:0;background:linear-gradient(90deg,#b8a27c,var(--ink))}
+  .vs-line.b .vt i{left:0;background:linear-gradient(90deg,#c98a7f,var(--red))}
+  .vs-line .vab{font-size:8.5px;letter-spacing:.06em;color:var(--ink-faint);width:9px;flex:0 0 auto;font-family:ui-monospace,monospace}
+  .vs-line.b .vab{color:rgba(173,56,44,.75)}
+  .vs-line .vn{font-family:ui-monospace,monospace;font-size:11px;width:26px;flex:0 0 auto;color:var(--ink-soft);text-align:right}
+  .vs-line.b .vn{color:var(--red)}
+  .vs-facts{margin-top:20px;border-top:1px solid var(--line-soft)}
+  .vs-facts div{display:flex;justify-content:space-between;gap:10px;font-size:12px;padding:8px 0;border-bottom:1px dotted rgba(140,110,70,.25);color:var(--ink-soft)}
+  .vs-facts div span:first-child{color:var(--ink-faint);letter-spacing:.06em;font-size:11px}
+  .vs-facts b{font-weight:600;color:var(--ink);font-family:ui-monospace,monospace;font-size:11.5px}
+  .vs-verdict{margin:20px 0 0;padding:16px 16px 14px;background:rgba(255,255,255,.4);border:1px solid var(--line);border-left:3px solid var(--red);font-size:13px;line-height:2;color:var(--ink-soft)}
+  .vs-verdict b{color:var(--ink);font-weight:600}
+  .vs-verdict p{margin:0}
+  .vs-verdict p + p{margin-top:8px}
+  .vs-again{display:flex;gap:10px;margin-top:22px}
+  .vs-again .btn{flex:1}
+
+  /* 纸张做旧：茶渍 + 折痕 + 边缘暗角 */
+  .aging{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:3px}
+  .aging .stain{position:absolute;display:block;border-radius:50%;mix-blend-mode:multiply}
+  .aging .s1{width:210px;height:188px;right:-58px;top:330px;
+    background:radial-gradient(circle at 44% 42%, rgba(146,100,48,.085) 0%, rgba(146,100,48,.045) 44%, rgba(146,100,48,0) 74%)}
+  .aging .s2{width:164px;height:146px;left:-58px;top:66%;
+    background:radial-gradient(circle at 50% 50%, rgba(120,86,44,.075) 0%, rgba(120,86,44,.03) 50%, rgba(120,86,44,0) 74%)}
+  .aging .s3{width:108px;height:94px;right:22px;bottom:18%;
+    background:radial-gradient(circle at 50% 50%, rgba(162,120,58,.065) 0%, rgba(162,120,58,0) 72%)}
+  .aging .fold{position:absolute;top:0;bottom:0;left:63%;width:1px;
+    background:linear-gradient(180deg, transparent 0%, rgba(126,100,66,.07) 10%, rgba(255,255,255,.30) 50%, rgba(126,100,66,.06) 90%, transparent 100%)}
+  .aging .fold::after{content:"";position:absolute;top:0;bottom:0;left:1px;width:16px;
+    background:linear-gradient(90deg, rgba(255,255,255,.20), transparent)}
+  .aging::after{content:"";position:absolute;inset:0;
+    background:radial-gradient(140% 110% at 50% 50%, transparent 62%, rgba(120,92,52,.07) 100%)}
+
+  /* 值班员手写批注 */
+  .curator{
+    margin:22px 0 0;padding:0 4px;transform:rotate(-2.2deg);transform-origin:left bottom;
+    font-family:"Songti SC","STSong","SimSun",serif;font-size:12.5px;line-height:1.9;
+    color:rgba(173,56,44,.78);letter-spacing:.06em;
+  }
+  .curator span{display:block;font-size:10px;letter-spacing:.14em;opacity:.72;margin-top:2px;text-align:right}
+
+  /* 年度切片 */
+  .yr-chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+  .yr-chip{
+    font:inherit;font-size:11.5px;font-family:ui-monospace,monospace;letter-spacing:.06em;cursor:pointer;
+    padding:5px 11px;border:1px solid rgba(42,33,24,.28);background:transparent;color:var(--ink-soft);
+    border-radius:1px;transition:.18s;
+  }
+  .yr-chip:hover{border-color:var(--ink);color:var(--ink)}
+  .yr-chip.on{background:var(--ink);color:var(--paper);border-color:var(--ink);font-weight:600}
+  .yr-panel{border:1px solid var(--line);background:rgba(255,255,255,.34);padding:14px 15px;font-size:12.5px;line-height:1.95;color:var(--ink-soft)}
+  .yr-panel .yp-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:8px}
+  .yr-panel .yp-y{font-family:ui-monospace,monospace;font-size:15px;font-weight:700;color:var(--ink);letter-spacing:.04em}
+  .yr-panel .yp-n{font-size:11px;color:var(--red);letter-spacing:.06em}
+  .yr-panel .yp-row{margin-top:4px}
+  .yr-panel .yp-row b{color:var(--ink);font-weight:600}
+  .yr-panel .yp-list{color:var(--ink-faint);font-size:11.5px;margin-top:6px;padding-top:6px;border-top:1px dotted rgba(140,110,70,.3);overflow-wrap:anywhere}
+
+  footer{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font-size:10.5px;color:var(--ink-faint);line-height:1.9;letter-spacing:.04em;position:relative;z-index:2}  footer b{color:var(--ink-soft);font-weight:600}
 
   @media (max-width:560px){
     body{padding:0 0 40px}
@@ -232,12 +370,67 @@
     #ring{width:126px;height:126px}
     .actions .btn{flex:1 1 100%}
     .stamp{width:56px;height:56px;font-size:9.5px}
+    .vs-head{flex-direction:column;gap:8px}
+    .vs-mid{align-self:center;padding:2px 0;font-size:9px}
+    .vs-person .vp-t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:240px}
+    .vs-person{padding:10px}
+    .vs-line{height:14px}
+    .vs-verdict{padding:14px 13px 12px;font-size:12.5px;line-height:1.95}
+    .vs-again{flex-direction:column}
+    .stratum{padding:0 7px;gap:6px}
+    .relic-txt{font-size:12.5px}
   }
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
   .sheet{box-shadow:
       0 1px 0 rgba(255,255,255,.6) inset,
       0 34px 80px -22px rgba(40,48,60,.45),
-      0 6px 22px rgba(40,48,60,.24)}
+      0 6px 22px rgba(40,48,60,.24)}  /* ---------- 发掘过程动画 ---------- */
+  .dig-anim{width:104px;height:104px;margin:0 auto 26px;position:relative}
+  .pit{position:absolute;inset:0;border:1.5px solid var(--ink);border-radius:2px;
+       overflow:hidden;background:#efe4cc;
+       box-shadow:0 6px 18px -10px rgba(42,33,24,.6)}
+  .pit i{position:absolute;left:0;right:0;display:block;transform-origin:center}
+  .pit .l1{top:0;height:35%;background:linear-gradient(180deg,#cdbb98,#bda87f);animation:peel 3.6s infinite}
+  .pit .l2{top:35%;height:33%;background:linear-gradient(180deg,#b19b73,#9c8459);animation:peel 3.6s infinite .42s}
+  .pit .l3{top:68%;height:32%;background:linear-gradient(180deg,#8b734a,#6f5a38);animation:peel 3.6s infinite .84s}
+  .pit .find{position:absolute;left:50%;top:52%;width:24px;height:28px;opacity:0;
+             animation:find 3.6s infinite}
+  @keyframes peel{
+    0%,16%{opacity:1;transform:translateY(0) scaleY(1)}
+    32%,92%{opacity:0;transform:translateY(-12px) scaleY(.5)}
+    100%{opacity:1;transform:translateY(0) scaleY(1)}
+  }
+  @keyframes find{
+    0%,52%{opacity:0;transform:translate(-50%,6px) scale(.85)}
+    68%,88%{opacity:1;transform:translate(-50%,0) scale(1)}
+    100%{opacity:0;transform:translate(-50%,0) scale(1)}
+  }
+
+  /* ---------- 指标可展开 ---------- */
+  .metric{cursor:pointer;border-radius:2px;transition:background .2s;margin-bottom:16px;
+          padding:8px 8px 6px;margin-left:-8px;margin-right:-8px}
+  .metric:hover{background:rgba(42,33,24,.028)}
+  .metric-top .cv{display:inline-block;font-size:10px;color:var(--ink-faint);
+                  margin-left:5px;transition:transform .25s;transform-origin:center}
+  .metric.open .cv{transform:rotate(90deg)}
+  .metric-note .hintx{color:var(--red);opacity:.72}
+  .metric-detail{max-height:0;overflow:hidden;opacity:0;
+                 transition:max-height .34s ease,opacity .26s}
+  .metric.open .metric-detail{max-height:340px;opacity:1}
+  .md-in{padding:14px 0 2px}
+  .hist{display:flex;align-items:flex-end;gap:2px;height:58px;margin-top:4px}
+  .hist i{flex:1;background:var(--line);border-radius:1px 1px 0 0;min-height:2px}
+  .hist i.night{background:var(--red);opacity:.78}
+  .md-cap{font-size:10.5px;color:var(--ink-faint);letter-spacing:.05em;
+          display:flex;justify-content:space-between;margin-top:7px}
+  .md-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+  .md-list span{font-family:ui-monospace,monospace;font-size:10.5px;color:var(--ink-soft);
+                background:rgba(42,33,24,.05);border:1px solid var(--line-soft);
+                padding:2px 6px;border-radius:1px}
+  .md-list span.bad{color:var(--red);border-color:rgba(173,56,44,.35);background:rgba(173,56,44,.06)}
+  .md-row{display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink-soft);
+          padding:4px 0;border-bottom:1px dotted rgba(140,110,70,.2)}
+
 </style>
 </head>
 <body>
@@ -353,6 +546,10 @@
 
 <main class="sheet">
   <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+  <div class="aging" aria-hidden="true">
+    <i class="stain s1"></i><i class="stain s2"></i><i class="stain s3"></i>
+    <i class="fold"></i>
+  </div>
 
   <header class="masthead">
     <div class="org serif">
@@ -383,7 +580,7 @@
         </div>
         <div class="actions-in">
           <button class="btn primary" type="submit" id="dig-btn">开始考古</button>
-          <button class="btn ghost" type="button" id="demo-btn">看示例档案</button>
+          <button class="btn ghost" type="button" id="demo-btn">调阅馆藏示例</button>
         </div>
       </form>
       <div id="err-box" class="err hidden"></div>
@@ -395,6 +592,8 @@
         <button type="button" class="chip" data-user="ruanyf">ruanyf</button>
       </div>
 
+      <p class="vs-entry">两个人一起看？<button type="button" class="linkish" id="vs-entry">进入双人对挖 →</button></p>
+
       <p class="hint">
         只读取 GitHub 公开数据 · 无需登录 · 不上传任何信息 · 档案在浏览器本地生成
       </p>
@@ -404,7 +603,7 @@
         <ol class="steps">
           <li><span class="n">STEP 01</span>输入 GitHub 用户名（就是主页地址里那串）</li>
           <li><span class="n">STEP 02</span>等 3 秒，程序翻阅你最近推送的 100 个仓库</li>
-          <li><span class="n">STEP 03</span>点「生成分享卡」，把人格档案存成图片发出去</li>
+          <li><span class="n">STEP 03</span>点「拓印档案」，把人格档案存成图片发出去</li>
         </ol>
       </div>
     </div>
@@ -413,6 +612,17 @@
   <!-- ============ 加载 ============ -->
   <section id="screen-loading" class="screen hidden">
     <div class="loading">
+      <div class="dig-anim" aria-hidden="true">
+        <div class="pit">
+          <i class="l1"></i><i class="l2"></i><i class="l3"></i>
+          <svg class="find" viewBox="0 0 40 48" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12,2 h16 v4 c0,4 -2,6 -2,10 c6,3 10,9 10,16 c0,10 -7,16 -16,16 c-9,0 -16,-6 -16,-16 c0,-7 4,-13 10,-16 c0,-4 -2,-6 -2,-10 z" fill="#ad382c"/>
+            <g stroke="#f4e9d3" stroke-width="1.6" opacity=".55">
+              <path d="M9,26 H31"/><path d="M7,32 H33"/><path d="M11,38 H29"/>
+            </g>
+          </svg>
+        </div>
+      </div>
       <div class="drill mono">DRILLING · 正在钻探</div>
       <h3 class="load-title serif" id="load-title">翻开土层</h3>
       <p class="load-sub" id="load-sub">正在读取公开地层……</p>
@@ -441,6 +651,11 @@
       <h3 class="section-h">四 维 探 方</h3>
       <div id="metrics"></div>
 
+      <h3 class="section-h">探 方 剖 面</h3>
+      <div class="strata-axis mono"><span>年代 · 层位</span><span>出土件数</span></div>
+      <div class="strata" id="strata"></div>
+      <div class="strata-cap" id="strata-cap"></div>
+
       <h3 class="section-h">语 言 年 轮</h3>
       <div class="ring-wrap">
         <div id="ring"></div>
@@ -452,18 +667,49 @@
 
       <h3 class="section-h">考 古 结 论</h3>
       <div class="conclusion" id="conclusion"></div>
+      <p class="curator" id="curator"></p>
+
+      <h3 class="section-h">年 度 切 片</h3>
+      <div class="yr-chips" id="yr-chips"></div>
+      <div class="yr-panel" id="yr-panel"></div>
 
       <div class="actions">
-        <button class="btn primary" id="share-btn">生成分享卡</button>
+        <button class="btn primary" id="share-btn">拓印档案</button>
         <button class="btn ghost" id="copy-btn">复制分享文案</button>
+        <button class="btn ghost" id="vs-from-report">拉人对挖</button>
         <button class="btn ghost" id="again-btn">再挖一个</button>
       </div>
     </div>
   </section>
 
+  <!-- ============ 双人对挖 ============ -->
+  <section id="screen-vs" class="screen hidden">
+    <div class="report">
+      <h2 class="vs-h serif">双 人 对 挖</h2>
+      <p class="vs-sub">同一套标尺，两块探方并排比对 —— 看看你们的地层是错位还是重合。</p>
+
+      <form id="vs-form" autocomplete="off">
+        <div class="input-row">
+          <span class="at mono">A /</span>
+          <input id="vs-a" type="text" spellcheck="false" placeholder="第一个用户名" maxlength="39" aria-label="用户名 A">
+        </div>
+        <div class="input-row">
+          <span class="at mono">B /</span>
+          <input id="vs-b" type="text" spellcheck="false" placeholder="第二个用户名" maxlength="39" aria-label="用户名 B">
+        </div>
+        <div class="actions-in">
+          <button class="btn primary" type="submit" id="vs-btn">开始对挖</button>
+          <button class="btn ghost" type="button" id="vs-back">返回单挖</button>
+        </div>
+      </form>
+      <div id="vs-err" class="err hidden"></div>
+      <div id="vs-out"></div>
+    </div>
+  </section>
+
   <footer>
     <b>说明</b>　本档案由公开 GitHub 数据实时推导，结果仅供娱乐，不构成任何专业评价。<br>
-    数据来自 GitHub REST API；若无网络或触发限流，可点「看示例档案」离线体验。<br>
+    数据来自 GitHub REST API；若无网络或触发限流，可点「调阅馆藏示例」离线体验。<br>
     页面不收集、不上传任何用户信息，所有计算均在你的浏览器本地完成。
   </footer>
 </main>
@@ -472,6 +718,11 @@
 
 <div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="分享卡预览">
   <button class="modal-close" id="close-modal" aria-label="关闭">×</button>
+  <div class="card-tabs" id="card-tabs">
+    <button type="button" data-style="paper" class="on">档案纸</button>
+    <button type="button" data-style="ink">墨拓</button>
+    <button type="button" data-style="label">标本签</button>
+  </div>
   <img id="card-img" alt="编程人格档案分享卡">
   <div class="modal-actions">
     <button class="btn primary" id="dl-btn">保存图片</button>
@@ -524,7 +775,7 @@
 
   /* ---------------- DOM ---------------- */
   const $ = id => document.getElementById(id);
-  const screens = {input:$("screen-input"), loading:$("screen-loading"), report:$("screen-report")};
+  const screens = {input:$("screen-input"), loading:$("screen-loading"), report:$("screen-report"), vs:$("screen-vs")};
   let currentReport = null;
 
   function show(name){
@@ -610,7 +861,7 @@
     ].map((r,i) => ({
       name:r[0], language:r[1], stargazers_count:r[2], size:r[3],
       description:r[4] || null, fork:false, archived:false,
-      created_at: iso(now - (200 + i*130) * 864e5),
+      created_at: iso(now - (200 + i*130 + (i >= 9 ? 430 : 0)) * 864e5),
       pushed_at:  iso(now - (2 + i*7) * 864e5),
       html_url:"#"
     }));
@@ -641,31 +892,40 @@
 
     /* 夜行指数：优先用活动记录，其次用各仓库最近推送时间兜底 */
     const pushes = events.filter(e => e && e.created_at);
+    const histEv = new Array(24).fill(0), histPush = new Array(24).fill(0);
     let night = 0.32, nightNote = "活跃数据不足，按中位估计", nightSrc = "none", counted = 0;
     let nightHits = 0;
     pushes.forEach(e => {
       const d = new Date(e.created_at);
       if(isNaN(d)) return;
       const h = (d.getUTCHours() + 8) % 24;
-      counted++;
+      counted++; histEv[h]++;
       if(h >= 22 || h < 6) nightHits++;
     });
+    const pushHours = sample.map(r => r.pushed_at).filter(Boolean)
+      .map(t => { const d = new Date(t); return isNaN(d) ? null : (d.getUTCHours() + 8) % 24; })
+      .filter(h => h !== null);
+    pushHours.forEach(h => histPush[h]++);
+
+    let nightHist = histEv, nightUnit = "条公开活动";
     if(counted >= 5){
       night = nightHits / counted; nightSrc = "events";
       nightNote = `深夜活动 ${Math.round(night*100)}% · ${counted} 条公开记录`;
+    }else if(pushHours.length >= 3){
+      night = pushHours.filter(h => h >= 22 || h < 6).length / pushHours.length;
+      nightSrc = "pushed"; nightHist = histPush; nightUnit = "个仓库的最近推送";
+      nightNote = `深夜推送 ${Math.round(night*100)}% · ${pushHours.length} 个仓库的最近推送`;
     }else{
-      const pushHours = sample.map(r => r.pushed_at).filter(Boolean)
-        .map(t => { const d = new Date(t); return isNaN(d) ? null : (d.getUTCHours() + 8) % 24; })
-        .filter(h => h !== null);
-      if(pushHours.length >= 3){
-        night = pushHours.filter(h => h >= 22 || h < 6).length / pushHours.length;
-        nightSrc = "pushed";
-        nightNote = `深夜推送 ${Math.round(night*100)}% · ${pushHours.length} 个仓库的最近推送`;
-      }
+      nightHist = histEv.some(v => v) ? histEv : histPush;
     }
 
     /* 命名洁癖：规范命名的仓库占比 */
-    const cleanCount = sample.filter(r => CLEAN_NAME.test(r.name || "") && !BAD_NAME.test(r.name || "")).length;
+    const cleanNames = [], messyNames = [];
+    sample.forEach(r => {
+      const nm = r.name || "";
+      (CLEAN_NAME.test(nm) && !BAD_NAME.test(nm) ? cleanNames : messyNames).push(nm);
+    });
+    const cleanCount = cleanNames.length;
     const tidy = cleanCount / total;
 
     /* 涉猎广度：语言种类 + 仓库规模 */
@@ -714,28 +974,81 @@
           .forEach((o,k)=>{ if(k < leftPct) shownPct[o.i]++; });
     ring.forEach((x,i)=>{ x.pctText = shownPct[i]; });
 
-    /* 出土器物 */
+    /* 出土器物（点开看器物状态） */
     const relics = [];
     const dated = sample.filter(r => r.created_at).sort((a,b)=> new Date(a.created_at) - new Date(b.created_at));
     if(dated.length){
       const oldest = dated[0];
       const yrs = Math.max(1, Math.round((Date.now() - new Date(oldest.created_at)) / 3.156e10));
-      relics.push({tag:"最古老层", html:`<b>${esc(oldest.name)}</b> —— 距今约 ${yrs} 年，是你目前可考的最早地层。`});
+      relics.push({tag:"最古老层", repo:oldest, name:oldest.name,
+        text:`距今约 ${yrs} 年，是你目前可考的最早地层。`,
+        note:"年代最久的一层，往往能看出你最初学的是哪门手艺。"});
     }
     const heaviest = sample.slice().sort((a,b)=>(b.size||0)-(a.size||0))[0];
     if(heaviest && heaviest.size){
       const mb = (heaviest.size/1024).toFixed(1);
-      relics.push({tag:"最重藏品", html:`<b>${esc(heaviest.name)}</b> —— 体积 ${mb} MB，${mb>50?"搬运时请借助工具":"保存完好，未见坍塌"}。`});
+      relics.push({tag:"最重藏品", repo:heaviest, name:heaviest.name,
+        text:`体积 ${mb} MB，${mb>50?"搬运时请借助工具":"保存完好，未见坍塌"}。`,
+        note:"体积越大，说明这块土里塞的东西越多 —— 依赖、资源、构建产物都可能埋在里面。"});
     }
     const starTop = sample.slice().sort((a,b)=>(b.stargazers_count||0)-(a.stargazers_count||0))[0];
     if(starTop && starTop.stargazers_count > 0){
-      relics.push({tag:"最亮展品", html:`<b>${esc(starTop.name)}</b> —— 收获 ${starTop.stargazers_count} 颗星，是本馆的镇馆之宝。`});
+      relics.push({tag:"最亮展品", repo:starTop, name:starTop.name,
+        text:`收获 ${starTop.stargazers_count} 颗星，是本馆的镇馆之宝。`,
+        note:"星标是外来访客留下的印记，说明这件器物曾被别的聚落认真端详。"});
     }
     const badOne = sample.find(r => BAD_NAME.test(r.name||""));
     relics.push(badOne
-      ? {tag:"命名化石", html:`<b>${esc(badOne.name)}</b> —— 命名风格令人动容，疑似出土于凌晨三点。`}
-      : {tag:"命名化石", html:`全馆命名规范，未发现 <b>final2</b>、<b>新建文件夹</b> 一类遗迹。`}
+      ? {tag:"命名化石", repo:badOne, name:badOne.name,
+         text:"命名风格令人动容，疑似出土于凌晨三点。",
+         note:"此类命名常在“先跑通再改名”的抢救性发掘中产生，属于典型的临时工棚遗迹。"}
+      : {tag:"命名化石", repo:null, name:"全馆命名规范",
+         text:"未发现 final2、新建文件夹 一类遗迹。",
+         note:"整座遗址没有抢救性命名的痕迹，说明你每次都打算长期保存这批东西。"}
     );
+
+    /* 探方剖面：按年分层 */
+    const byYear = new Map();
+    sample.forEach(r => {
+      if(!r.created_at) return;
+      const d = new Date(r.created_at);
+      if(isNaN(d)) return;
+      const y = d.getFullYear();
+      if(!byYear.has(y)) byYear.set(y, []);
+      byYear.get(y).push(r);
+    });
+    const strata = [];
+    if(byYear.size){
+      const ys = [...byYear.keys()].sort((a,b)=>a-b);
+      const minY = ys[0];
+      const maxY = Math.max(ys[ys.length-1], new Date().getFullYear());
+      let gapFrom = null;
+      for(let y = minY; y <= maxY; y++){
+        if(byYear.has(y)){
+          if(gapFrom !== null){
+            strata.push({gap:true, label: gapFrom === y-1 ? String(gapFrom) : gapFrom + "–" + (y-1)});
+            gapFrom = null;
+          }
+          const items = byYear.get(y);
+          strata.push({gap:false, year:y, count:items.length, names:items.map(r=>r.name)});
+        }else if(gapFrom === null){
+          gapFrom = y;
+        }
+      }
+    }
+    const strataMax = strata.reduce((m,s)=>s.gap?m:Math.max(m,s.count),1);
+
+    /* 年度切片 */
+    const yearStats = [...byYear.entries()].map(([y, items]) => {
+      const lm = new Map();
+      items.forEach(r => { const k = r.language || "未标注"; lm.set(k, (lm.get(k)||0)+1); });
+      return {
+        year: y, count: items.length,
+        langs: [...lm.entries()].sort((a,b)=>b[1]-a[1]).slice(0,3),
+        stars: items.reduce((s,r)=>s+(r.stargazers_count||0),0),
+        names: items.map(r=>r.name)
+      };
+    }).sort((a,b)=>b.year-a.year);
 
     /* 结论 */
     const concl = [
@@ -758,7 +1071,15 @@
       createdAt: profile.created_at,
       publicRepos: profile.public_repos ?? sample.length,
       sampled: sample.length,
-      code, type, metrics, ring, relics, concl,
+      code, type, metrics, ring, relics, concl, strata, strataMax, yearStats,
+      langs: ring.map(x=>x.name).filter(n=>n!=="其他" && n!=="未标注语言"),
+      detail: {
+        night: { hist: nightHist, unit: nightUnit, src: nightSrc, counted,
+                 n: nightSrc === "pushed" ? pushHours.length : counted },
+        tidy:  { clean: cleanCount, messy: messyNames.slice(0, 10), total },
+        broad: { langs: langList.slice(0, 12) },
+        social:{ followers: profile.followers || 0, stars, repos: sample.length }
+      },
       docId: "CA-" + (profile.login || "demo").slice(0,6).toUpperCase() + "-" + String(1024 + (sample.length*7 % 900)),
       isDemo: !!profile.__demo
     };
@@ -766,6 +1087,34 @@
 
   /* ---------------- 渲染 ---------------- */
   function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+  /* 器物状态判定 */
+  function relicState(r){
+    if(!r) return {k:"馆藏通则", cls:"dim", d:"这不是某一件具体器物，而是整座遗址的普遍特征。"};
+    if(r.archived) return {k:"已封存", cls:"warn", d:"该探方已被封存（archived），不再接受新的堆积，地层从此定格。"};
+    if(r.fork) return {k:"外来传入", cls:"dim", d:"非本地原生地层，系从他人遗址迁入（fork），只保留搬运痕迹。"};
+    const days = r.pushed_at ? (Date.now() - new Date(r.pushed_at)) / 864e5 : Infinity;
+    if(days > 540) return {k:"风化严重", cls:"warn", d:`最近一次堆积约在 ${Math.round(days/30)} 个月前，表层被风化，细节已经模糊。`};
+    if(!r.description) return {k:"铭文缺失", cls:"dim", d:"器物表面没有铭文（description），用途只能靠语言与命名推断。"};
+    return {k:"保存完好", cls:"", d:"地层完整、铭文清晰，可作教学标本。"};
+  }
+
+  /* 器物拓片信息行 */
+  function relicMeta(r){
+    if(!r) return "";
+    const ym = t => { const d = new Date(t); if(!t || isNaN(d)) return "—";
+      return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0"); };
+    const ago = t => { if(!t) return "—"; const d = (Date.now() - new Date(t)) / 864e5; if(!isFinite(d)) return "—";
+      return d < 1 ? "今天" : d < 30 ? Math.round(d) + " 天前" : d < 365 ? Math.round(d/30) + " 个月前" : (d/365).toFixed(1) + " 年前"; };
+    return [
+      r.language || "未标注语言",
+      "建于 " + ym(r.created_at),
+      "最近堆积 " + ago(r.pushed_at),
+      r.size ? (r.size/1024).toFixed(1) + " MB" : null,
+      "★ " + (r.stargazers_count||0),
+      "⑂ " + (r.forks_count||0)
+    ].filter(Boolean).join(" · ");
+  }
 
   function renderReport(rep){
     currentReport = rep;
@@ -782,16 +1131,56 @@
     $("type-name").textContent = rep.type.n;
     $("type-verdict").textContent = "「" + rep.type.v + "」";
 
-    /* 四维 */
-    $("metrics").innerHTML = rep.metrics.map(m => `
-      <div class="metric">
+    /* 四维（点击展开计算依据） */
+    const dd = rep.detail || null;
+    const detailHTML = (i, m) => {
+      if(!dd) return "";
+      if(i === 0){
+        const h = dd.night.hist || [];
+        const mx = Math.max(1, ...h);
+        return `<div class="hist">${h.map((v,hh)=>
+            `<i class="${(hh>=22||hh<6)?"night":""}" style="height:${Math.max(3, Math.round(v/mx*100))}%"></i>`).join("")}</div>
+          <div class="md-cap"><span>00</span><span>06</span><span>12</span><span>18</span><span>23</span></div>
+          <div class="md-cap"><span>红色 = 22:00–06:00 深夜时段</span><span>样本：${dd.night.n} ${esc(dd.night.unit)}</span></div>`;
+      }
+      if(i === 1){
+        const ms = dd.tidy.messy || [];
+        return `<div class="md-cap"><span>命名规范 ${dd.tidy.clean} / ${dd.tidy.total}</span><span>${Math.round(m.val*100)}%</span></div>
+          <div class="md-list">${ms.length
+            ? ms.map(n=>`<span class="bad">${esc(n)}</span>`).join("")
+            : `<span>全部规范，未发现随性命名</span>`}</div>`;
+      }
+      if(i === 2){
+        const ls = dd.broad.langs || [];
+        return `<div class="md-list">${ls.map(([n,c])=>`<span>${esc(n)} ×${c}</span>`).join("") || "<span>未标注语言</span>"}</div>`;
+      }
+      return `<div class="md-row"><span>关注者</span><span>${dd.social.followers}</span></div>
+        <div class="md-row"><span>星标合计</span><span>${dd.social.stars}</span></div>
+        <div class="md-row"><span>公开仓库（采样）</span><span>${dd.social.repos}</span></div>
+        <div class="md-cap"><span>指数 = log10(1 + 关注者 + 星标) ÷ 3.1</span></div>`;
+    };
+
+    $("metrics").innerHTML = rep.metrics.map((m,i) => `
+      <div class="metric" data-i="${i}" role="button" tabindex="0" aria-expanded="false">
         <div class="metric-top">
-          <span class="k">${esc(m.key)}</span>
+          <span class="k">${esc(m.key)}<span class="cv">›</span></span>
           <span class="n ${m.red?"red":""}">${Math.round(m.val*100)}</span>
         </div>
         <div class="track"><i class="${m.red?"red":""}" data-w="${Math.max(3, Math.round(m.val*100))}"></i></div>
-        <div class="metric-note">${esc(m.note)}</div>
+        <div class="metric-note">${esc(m.note)} <span class="hintx">· 看依据</span></div>
+        <div class="metric-detail"><div class="md-in">${detailHTML(i, m)}</div></div>
       </div>`).join("");
+
+    document.querySelectorAll("#metrics .metric").forEach(el => {
+      const toggle = () => {
+        const on = el.classList.toggle("open");
+        el.setAttribute("aria-expanded", on ? "true" : "false");
+      };
+      el.addEventListener("click", toggle);
+      el.addEventListener("keydown", e => {
+        if(e.key === "Enter" || e.key === " "){ e.preventDefault(); toggle(); }
+      });
+    });
 
     /* 年轮 */
     const R = 62, C = 2 * Math.PI * R, cx = 80, cy = 80;
@@ -817,16 +1206,241 @@
         <span class="lp">${l.pctText}%</span>
       </li>`).join("");
 
-    /* 器物 */
-    $("relics").innerHTML = rep.relics.map(r => `<li><span class="tag">${esc(r.tag)}</span><span>${r.html}</span></li>`).join("");
+    /* 器物（点击展开器物状态与笔记） */
+    $("relics").innerHTML = rep.relics.map((r,i) => {
+      const st = relicState(r.repo);
+      const meta = relicMeta(r.repo);
+      return `<li class="relic" data-i="${i}" role="button" tabindex="0" aria-expanded="false">
+        <span class="tag">${esc(r.tag)}</span>
+        <div class="relic-body">
+          <div class="relic-txt"><b>${esc(r.name)}</b>${r.name.length < 22 ? " ——" : ""} ${esc(r.text)}<span class="relic-state ${st.cls}">${esc(st.k)}</span></div>
+          <div class="relic-note">
+            ${meta ? `<span class="nl">${esc(meta)}</span>` : ""}
+            <span class="nb">${esc(st.d)}${r.note ? " " + esc(r.note) : ""}</span>
+          </div>
+        </div>
+        <span class="relic-cv" aria-hidden="true">›</span>
+      </li>`;
+    }).join("");
+
+    document.querySelectorAll("#relics .relic").forEach(el => {
+      const toggle = () => {
+        const on = el.classList.toggle("open");
+        el.setAttribute("aria-expanded", on ? "true" : "false");
+      };
+      el.addEventListener("click", toggle);
+      el.addEventListener("keydown", e => {
+        if(e.key === "Enter" || e.key === " "){ e.preventDefault(); toggle(); }
+      });
+    });
+
+    /* 探方剖面 */
+    const strata = rep.strata || [];
+    const mx = rep.strataMax || 1;
+    const years = strata.filter(s => !s.gap).map(s => s.year);
+    const y0 = years.length ? years[0] : 0;
+    const y1 = years.length ? years[years.length-1] : 0;
+    $("strata").innerHTML = strata.map((s,i) => {
+      if(s.gap){
+        return `<div class="stratum gap" style="--h:20px" data-i="${i}">
+          <span class="sy">${esc(s.label)}</span><span class="gline"></span><span class="sn">文 化 断 层</span></div>`;
+      }
+      const k = y1 > y0 ? (s.year - y0) / (y1 - y0) : 1;
+      /* 越深（越早）越暗，像真实地层 */
+      const light = Math.round(52 + k * 32);
+      const hue = 26 + (s.year % 4) * 5;
+      const sat = 24 + (s.year % 3) * 5;
+      const h = Math.round(19 + (s.count / mx) * 46);
+      const fg  = light < 62 ? "rgba(244,233,211,.88)" : "rgba(20,16,12,.7)";
+      const fg2 = light < 62 ? "rgba(244,233,211,.52)" : "rgba(20,16,12,.45)";
+      return `<div class="stratum" style="--h:${h}px;background:hsl(${hue} ${sat}% ${light}%)" data-i="${i}" title="${s.year} 年 · ${s.count} 件">
+        <span class="sy" style="color:${fg}">${s.year}</span><span class="sn" style="color:${fg2}">${s.count} 件</span></div>`;
+    }).join("") || `<div class="stratum gap" style="--h:20px"><span class="sy">未记录</span><span class="sn">无可用年代</span></div>`;
+
+    $("strata-cap").innerHTML = years.length
+      ? `共 <b>${strata.filter(s=>!s.gap).reduce((a,s)=>a+s.count,0)}</b> 件采样器物，跨 <b>${y1 - y0 + 1}</b> 个年度层位。点任意一层查看当年出土清单。`
+      : "该探方没有可用的创建时间，剖面无法绘制。";
+
+    document.querySelectorAll("#strata .stratum").forEach(el => {
+      const i = +el.dataset.i;
+      const s = strata[i];
+      if(!s || s.gap) return;
+      el.addEventListener("click", () => {
+        const on = el.classList.contains("on");
+        document.querySelectorAll("#strata .stratum").forEach(x => x.classList.remove("on"));
+        if(on){
+          $("strata-cap").innerHTML = `共 <b>${strata.filter(x=>!x.gap).reduce((a,x)=>a+x.count,0)}</b> 件采样器物，跨 <b>${y1 - y0 + 1}</b> 个年度层位。点任意一层查看当年出土清单。`;
+          return;
+        }
+        el.classList.add("on");
+        const list = s.names.slice(0, 14).map(n => esc(n)).join(" · ");
+        $("strata-cap").innerHTML = `<em>${s.year} 年层位</em>　共 ${s.count} 件：${list}${s.names.length > 14 ? " …" : ""}`;
+      });
+    });
 
     /* 结论 */
     $("conclusion").innerHTML = rep.concl.map(p => `<p>${p}</p>`).join("");
+
+    /* 值班员手写批注 */
+    const nightV = rep.metrics[0] ? rep.metrics[0].val : 0;
+    const tidyV  = rep.metrics[1] ? rep.metrics[1].val : 0;
+    const noteLine = nightV > 0.5
+      ? "夜间堆积明显偏厚，建议留一盏灯，也留一份白天。"
+      : tidyV < 0.5
+        ? "命名层位略显杂乱，已按原样保存，不做整理。"
+        : "地层完整、界限清楚，无需干预，按原样归档。";
+    $("curator").innerHTML = `${esc(noteLine)}<span>— 值班考古员 · ${esc(rep.docId)}</span>`;
+
+    /* 年度切片 */
+    const ys = rep.yearStats || [];
+    const panel = (s) => {
+      if(!s) return `<div class="yp-row">该探方没有可切的年度。</div>`;
+      return `<div class="yp-h"><span class="yp-y">${s.year}</span><span class="yp-n">新增 ${s.count} 件 · ★ ${s.stars}</span></div>
+        <div class="yp-row">主语言：${s.langs.length ? s.langs.map(([n,c]) => `<b>${esc(n)}</b> ×${c}`).join("　") : "未标注"}</div>
+        <div class="yp-list">${s.names.slice(0,12).map(esc).join(" · ")}${s.names.length > 12 ? " …" : ""}</div>`;
+    };
+    if(ys.length){
+      $("yr-chips").innerHTML = ys.map((s,i) => `<button type="button" class="yr-chip${i===0?" on":""}" data-y="${s.year}">${s.year}</button>`).join("");
+      $("yr-panel").innerHTML = panel(ys[0]);
+      $("yr-chips").querySelectorAll(".yr-chip").forEach(b => {
+        b.addEventListener("click", () => {
+          $("yr-chips").querySelectorAll(".yr-chip").forEach(x => x.classList.toggle("on", x === b));
+          const s = ys.find(v => String(v.year) === b.dataset.y);
+          $("yr-panel").innerHTML = panel(s);
+        });
+      });
+    }else{
+      $("yr-chips").innerHTML = "";
+      $("yr-panel").innerHTML = `<div class="yp-row">该探方没有可用的创建时间，无法切片。</div>`;
+    }
 
     show("report");
 
     requestAnimationFrame(() => {
       document.querySelectorAll(".track i").forEach(el => { el.style.width = el.dataset.w + "%"; });
+    });
+  }
+
+  /* ---------------- 双人对挖 ---------------- */
+  const normName = v => String(v||"").trim()
+    .replace(/^https?:\/\/(www\.)?github\.com\//i,"").replace(/\/+$/,"").split(/[?#]/)[0];
+
+  function vsMsg(html){
+    const b = $("vs-err");
+    if(!html){ b.classList.add("hidden"); b.innerHTML = ""; return; }
+    b.innerHTML = html; b.classList.remove("hidden");
+  }
+
+  async function copyText(text, okMsg){
+    try{
+      await navigator.clipboard.writeText(text);
+      toast(okMsg || "已抄录");
+    }catch(e){
+      const ta = document.createElement("textarea");
+      ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      try{ document.execCommand("copy"); toast(okMsg || "已抄录"); }
+      catch(_){ toast("复制失败，请手动选择"); }
+      ta.remove();
+    }
+  }
+
+  async function vsDig(){
+    const na = normName($("vs-a").value), nb = normName($("vs-b").value);
+    vsMsg("");
+    if(!na || !nb){ vsMsg("两边都要填 —— 对挖需要两个不同的用户名。"); return; }
+    if(na.toLowerCase() === nb.toLowerCase()){ vsMsg("同一个探方挖两次，不会有新东西。请换一个用户名。"); return; }
+
+    $("vs-btn").disabled = true;
+    $("vs-out").innerHTML = `<p class="vs-sub mono" style="border-left-color:var(--red)">DRILLING · 正在同时钻探两块探方……</p>`;
+    const grab = async n => { try { return await fetchGithub(n); } catch(e){ e.user = n; throw e; } };
+    try{
+      const [da, db] = await Promise.all([grab(na), grab(nb)]);
+      renderVs(analyze(da), analyze(db));
+    }catch(e){
+      $("vs-out").innerHTML = "";
+      vsMsg(e.message === "NOT_FOUND"
+        ? `该探方未见文化层 —— GitHub 上找不到「${esc(e.user)}」，请核对拼写。`
+        : e.message === "RATE_LIMIT"
+        ? "发掘许可已用尽 —— GitHub 匿名接口每小时仅 60 次，对挖一次要消耗双份。请稍后再来。"
+        : "钻探设备故障 —— 网络或接口波动，请稍后重试。");
+    }finally{
+      $("vs-btn").disabled = false;
+    }
+  }
+
+  function renderVs(A, B){
+    $("doc-id").textContent = "No. VS-" + A.login.slice(0,4).toUpperCase() + "×" + B.login.slice(0,4).toUpperCase();
+    const pct = m => Math.round(m.val * 100);
+    const line = (v, cls, ab) => `<div class="vs-line ${cls}"><span class="vab">${ab}</span><span class="vt"><i data-w="${v}"></i></span><span class="vn">${v}</span></div>`;
+
+    const metricsHTML = A.metrics.map((m,i) => `
+      <div class="vs-metric">
+        <div class="vs-k">${esc(m.key)}</div>
+        ${line(pct(m), "a", "A")}
+        ${line(pct(B.metrics[i]), "b", "B")}
+      </div>`).join("");
+
+    const facts = [
+      ["采样仓库", A.sampled, B.sampled],
+      ["星标合计", A.detail.social.stars, B.detail.social.stars],
+      ["关注者", A.detail.social.followers, B.detail.social.followers],
+      ["人格编码", A.code, B.code]
+    ].map(([k,a,b]) => `<div><span>${esc(k)}</span><span><b>${esc(a)}</b> ／ <b>${esc(b)}</b></span></div>`).join("");
+
+    const diffs = A.metrics.map((m,i) => ({
+      k: m.key, a: pct(m), b: pct(B.metrics[i]), gap: Math.abs(pct(m) - pct(B.metrics[i]))
+    })).sort((x,y) => y.gap - x.gap);
+    const top = diffs[0];
+    const shared = (A.langs || []).filter(n => (B.langs||[]).includes(n)).slice(0,3);
+
+    const v1 = `你们在「<b>${esc(top.k)}</b>」上相差 <b>${top.gap}</b> 分（${top.a} : ${top.b}）${
+      top.gap >= 40 ? "，几乎是两块互不相干的地层。" :
+      top.gap >= 20 ? "，像同一片遗址里的两个亚区。" :
+      "，地层几乎重合。"}`;
+    const v2 = A.code === B.code
+      ? `两人的编程人格都是 <b>${A.code}</b>「${esc(A.type.n)}」，同一类型的两件标本，差别只在细节。`
+      : `人格编码 <b>${A.code}</b>「${esc(A.type.n)}」× <b>${B.code}</b>「${esc(B.type.n)}」—— ${
+          A.code[0] !== B.code[0] ? "一个夜行、一个晨耕，作息层位正好错开。" : "作息层位一致，多半会同时在线。"}`;
+    const v3 = shared.length
+      ? `共同语言：<b>${shared.map(esc).join("、")}</b>${shared.length >= 3 ? " 等" : ""} —— 有共同语，协作时能少带一本词典。`
+      : `两座遗址的语言年轮没有交集，属于互相读不懂对方陶文的关系。`;
+
+    const person = (r, cls) => `<div class="vs-person ${cls}">
+      ${r.avatar ? `<img src="${esc(r.avatar)}" alt="" referrerpolicy="no-referrer">` : ""}
+      <div style="min-width:0">
+        <div class="vp-n">@${esc(r.login)}</div>
+        <div class="vp-t">${r.code} · ${esc(r.type.n)}</div>
+      </div></div>`;
+
+    $("vs-out").innerHTML = `
+      <div class="vs-head">
+        ${person(A, "a")}
+        <div class="vs-mid">VS</div>
+        ${person(B, "b")}
+      </div>
+      <p class="vs-sub" style="margin:14px 0 0;font-size:11.5px;border-left-color:var(--red)">
+        A 为深色条、B 为红色条，条长可直接比高低。
+      </p>
+      <div class="vs-metrics">${metricsHTML}</div>
+      <div class="vs-facts">${facts}</div>
+      <div class="vs-verdict"><p>${v1}</p><p>${v2}</p><p>${v3}</p></div>
+      <div class="vs-again">
+        <button class="btn ghost" type="button" id="vs-open-a">只看 @${esc(A.login)}</button>
+        <button class="btn ghost" type="button" id="vs-open-b">只看 @${esc(B.login)}</button>
+      </div>
+      <button class="btn ghost" type="button" id="vs-copy-link" style="width:100%;margin-top:10px">复制对比链接</button>`;
+
+    show("vs");
+    requestAnimationFrame(() => {
+      document.querySelectorAll("#vs-out .vt i").forEach(el => { el.style.width = el.dataset.w + "%"; });
+    });
+
+    $("vs-open-a").addEventListener("click", () => { renderReport(A); });
+    $("vs-open-b").addEventListener("click", () => { renderReport(B); });
+    $("vs-copy-link").addEventListener("click", async () => {
+      const base = location.href.split("?")[0].split("#")[0];
+      await copyText(base + "?vs=" + encodeURIComponent(A.login) + "," + encodeURIComponent(B.login), "对比链接已抄录");
     });
   }
 
@@ -987,7 +1601,7 @@
     const relicRight = W - P - 112;
     let ry = 1238;
     rep.relics.slice(0,2).forEach(r => {
-      const plain = r.html.replace(/<[^>]+>/g,"");
+      const plain = r.name + " —— " + r.text;
       x.fillStyle = "#ad382c"; x.font = `600 20px ${serif}`;
       x.fillText(r.tag, P, ry);
       const tagW = x.measureText(r.tag).width;
@@ -1019,13 +1633,306 @@
     return c;
   }
 
+  /* ---- 模板二：墨拓（深底浅字） ---- */
+  function drawInkCard(rep){
+    const W = 1080, H = 1440, P = 80;
+    const c = document.createElement("canvas");
+    c.width = W; c.height = H;
+    const x = c.getContext("2d");
+    const serif = '"Songti SC","STSong","SimSun",serif';
+    const mono  = 'ui-monospace,"SF Mono",Menlo,Consolas,monospace';
+    const FG = "#f2e7d2", DIM = "rgba(242,231,210,.55)", RED = "#d8705f", LINE = "rgba(242,231,210,.24)";
+
+    x.fillStyle = "#171310"; x.fillRect(0,0,W,H);
+    for(let i=0;i<2200;i++){
+      const px = (i*137.5) % W, py = (i*271.3) % H;
+      x.fillStyle = "rgba(255,255,255,.014)";
+      x.fillRect(px, py, 2, 2);
+    }
+    x.strokeStyle = "rgba(242,231,210,.32)"; x.lineWidth = 2; x.strokeRect(40,40,W-80,H-80);
+    x.strokeStyle = "rgba(242,231,210,.13)"; x.lineWidth = 1; x.strokeRect(52,52,W-104,H-104);
+
+    x.fillStyle = FG; x.font = `600 30px ${serif}`; x.fillText("GitHub 考古所", P, 122);
+    x.fillStyle = DIM; x.font = `12px ${mono}`; x.fillText("INK RUBBING · 墨拓本", P, 148);
+    x.textAlign = "right"; x.fillStyle = DIM; x.font = `12px ${mono}`;
+    x.fillText(rep.docId, W-P, 122);
+    x.fillText("1024 · 特别档案", W-P, 148);
+    x.textAlign = "left";
+    x.strokeStyle = LINE; x.lineWidth = 2;
+    x.beginPath(); x.moveTo(P, 176); x.lineTo(W-P, 176); x.stroke();
+
+    /* 头像 */
+    const avS = 116, avX = W - P - avS, avY = 200;
+    if(cardAvatar && cardAvatar.naturalWidth){
+      x.save(); x.beginPath(); x.rect(avX, avY, avS, avS); x.clip();
+      x.drawImage(cardAvatar, avX, avY, avS, avS);
+      x.restore();
+      x.strokeStyle = "rgba(242,231,210,.5)"; x.lineWidth = 2; x.strokeRect(avX, avY, avS, avS);
+    }else if(rep.avatar){
+      x.strokeStyle = "rgba(242,231,210,.5)"; x.lineWidth = 2; x.strokeRect(avX, avY, avS, avS);
+      x.fillStyle = "rgba(242,231,210,.8)"; x.font = `700 44px ${serif}`; x.textAlign = "center";
+      x.fillText((rep.login || "?").slice(0,1).toUpperCase(), avX + avS/2, avY + avS/2 + 16);
+      x.textAlign = "left";
+    }
+
+    /* 姓名与类型 */
+    x.fillStyle = DIM; x.font = `13px ${mono}`; x.fillText("@" + rep.login, P, 226);
+    x.fillStyle = FG; x.font = `700 30px ${serif}`;
+    x.fillText("编程人格", P, 276);
+    x.fillStyle = RED; x.font = `700 16px ${mono}`;
+    x.fillText(rep.code, P, 310);
+
+    x.font = `700 52px ${serif}`; x.fillStyle = FG;
+    const typeLines = wrap(x, rep.type.n, W - P*2 - avS - 40);
+    let ty = 380;
+    typeLines.forEach(l => { x.fillText(l, P, ty); ty += 62; });
+
+    x.font = `21px ${serif}`; x.fillStyle = DIM;
+    let vy = ty + 10;
+    wrap(x, rep.type.v, W - P*2).slice(0,3).forEach(l => { x.fillText(l, P, vy); vy += 34; });
+
+    /* 四维 */
+    let my = vy + 44;
+    x.strokeStyle = LINE; x.lineWidth = 1;
+    x.beginPath(); x.moveTo(P, my); x.lineTo(W-P, my); x.stroke();
+    my += 48;
+    rep.metrics.forEach(m => {
+      const v = Math.round(m.val * 100);
+      x.fillStyle = DIM; x.font = `19px ${serif}`; x.fillText(m.key, P, my);
+      x.textAlign = "right"; x.fillStyle = m.red ? RED : FG; x.font = `700 26px ${mono}`;
+      x.fillText(String(v), W-P, my);
+      x.textAlign = "left";
+      x.fillStyle = "rgba(242,231,210,.10)"; x.fillRect(P, my + 14, W - P*2, 6);
+      const g = x.createLinearGradient(P, 0, P + (W-P*2), 0);
+      g.addColorStop(0, m.red ? "rgba(216,112,95,.45)" : "rgba(242,231,210,.28)");
+      g.addColorStop(1, m.red ? RED : FG);
+      x.fillStyle = g; x.fillRect(P, my + 14, (W - P*2) * Math.max(0, Math.min(1, v/100)), 6);
+      my += 76;
+    });
+
+    /* 语言 */
+    my += 6;
+    x.fillStyle = DIM; x.font = `600 13px ${mono}`; x.fillText("语 言 年 轮", P, my);
+    my += 34;
+    x.fillStyle = FG; x.font = `22px ${serif}`;
+    x.fillText(ellipsis(x, rep.ring.slice(0,4).map(l => `${l.name} ${l.pctText}%`).join("　·　"), W - P*2), P, my);
+
+    /* 器物 */
+    my += 54;
+    x.fillStyle = DIM; x.font = `600 13px ${mono}`; x.fillText("出 土 器 物", P, my);
+    my += 32;
+    const r0 = rep.relics[0];
+    if(r0){
+      x.fillStyle = RED; x.font = `600 18px ${serif}`; x.fillText(r0.tag, P, my);
+      const tw = x.measureText(r0.tag).width;
+      x.fillStyle = FG; x.font = `20px ${serif}`;
+      x.fillText(ellipsis(x, r0.name + " —— " + r0.text, W - P*2 - tw - 16), P + tw + 16, my);
+    }
+
+    /* 剖面小图 */
+    my += 62;
+    x.fillStyle = DIM; x.font = `600 13px ${mono}`; x.fillText("探 方 剖 面", P, my);
+    const strataInk = (rep.strata || []).filter(s => !s.gap);
+    const mxInk = rep.strataMax || 1;
+    if(strataInk.length){
+      const avail = W - P*2;
+      const n = strataInk.length;
+      const bgap = 14;
+      const bw = Math.max(14, Math.min(56, Math.floor((avail - (n-1)*bgap) / n)));
+      const total = n*bw + (n-1)*bgap;
+      const baseY = my + 96;
+      let bx = P + Math.max(0, (avail - total) / 2);
+      strataInk.forEach(s => {
+        const bh = Math.max(8, Math.round(s.count / mxInk * 76));
+        x.fillStyle = "rgba(242,231,210,.16)"; x.fillRect(bx, baseY, bw, 2);
+        x.fillStyle = "rgba(242,231,210,.72)";
+        x.fillRect(bx, baseY - bh, bw, bh);
+        x.fillStyle = "rgba(242,231,210,.42)"; x.font = `11px ${mono}`; x.textAlign = "center";
+        x.fillText(String(s.year).slice(2), bx + bw/2, baseY + 20);
+        x.fillText(String(s.count), bx + bw/2, baseY - bh - 10);
+        x.textAlign = "left";
+        bx += bw + bgap;
+      });
+      x.fillStyle = DIM; x.font = `12px ${mono}`; x.textAlign = "right";
+      x.fillText(`${n} 个层位`, W-P, my);
+      x.textAlign = "left";
+    }
+
+    /* 结论 */
+    const cLine = String(rep.concl[0] || "").replace(/<[^>]+>/g, "");
+    x.fillStyle = "rgba(242,231,210,.62)"; x.font = `20px ${serif}`;
+    let cy = my + 172;
+    wrap(x, cLine, W - P*2 - 150).slice(0,3).forEach(l => { x.fillText(l, P, cy); cy += 32; });
+
+    /* 页脚 */
+    const fy = H - 84;
+    x.strokeStyle = LINE; x.lineWidth = 1;
+    x.beginPath(); x.moveTo(P, fy-32); x.lineTo(W-P, fy-32); x.stroke();
+    x.fillStyle = "rgba(242,231,210,.72)"; x.font = `19px ${mono}`;
+    x.fillText("#WorkBuddy  #1024程序员节", P, fy);
+    x.fillStyle = "rgba(242,231,210,.4)"; x.font = `14px ${mono}`;
+    x.fillText("github.com/" + rep.login, P, fy + 26);
+
+    /* 朱印 */
+    const s = 82, sx = W - P - s, sy = H - 190;
+    x.save(); x.translate(sx + s/2, sy + s/2); x.rotate(-6/180*Math.PI);
+    x.strokeStyle = RED; x.lineWidth = 4; x.strokeRect(-s/2, -s/2, s, s);
+    x.fillStyle = RED; x.textAlign = "center"; x.font = `700 22px ${serif}`;
+    x.fillText("墨", -15, -4); x.fillText("拓", 15, -4);
+    x.fillText("档", -15, 24); x.fillText("案", 15, 24);
+    x.restore();
+    x.textAlign = "left";
+
+    return c;
+  }
+
+  /* ---- 模板三：标本签（方形） ---- */
+  function drawLabelCard(rep){
+    const S = 1080, P = 74;
+    const c = document.createElement("canvas");
+    c.width = S; c.height = S;
+    const x = c.getContext("2d");
+    const serif = '"Songti SC","STSong","SimSun",serif';
+    const mono  = 'ui-monospace,"SF Mono",Menlo,Consolas,monospace';
+
+    x.fillStyle = "#f4e9d3"; x.fillRect(0,0,S,S);
+    const g = x.createLinearGradient(0,0,S,S);
+    g.addColorStop(0,"rgba(255,255,255,.5)"); g.addColorStop(.55,"rgba(244,233,211,0)");
+    g.addColorStop(1,"rgba(190,168,132,.35)");
+    x.fillStyle = g; x.fillRect(0,0,S,S);
+    for(let i=0;i<150;i++){
+      const yy = (i*7.2 + (i*97%13)) % S;
+      x.strokeStyle = "rgba(140,110,70,.03)"; x.lineWidth = 1;
+      x.beginPath(); x.moveTo(0,yy); x.lineTo(S,yy); x.stroke();
+    }
+    x.strokeStyle = "#ad382c"; x.lineWidth = 5; x.strokeRect(34,34,S-68,S-68);
+    x.strokeStyle = "rgba(173,56,44,.4)"; x.lineWidth = 1; x.strokeRect(46,46,S-92,S-92);
+
+    x.fillStyle = "#ad382c"; x.font = `700 15px ${mono}`;
+    x.fillText("标 本 签", P, 96);
+    x.textAlign = "right"; x.fillStyle = "#8d7d65"; x.font = `13px ${mono}`;
+    x.fillText(rep.docId, S-P, 96);
+    x.textAlign = "left";
+    x.strokeStyle = "rgba(42,33,24,.5)"; x.lineWidth = 2;
+    x.beginPath(); x.moveTo(P, 118); x.lineTo(S-P, 118); x.stroke();
+
+    /* 头像 + 类型 */
+    const avS = 132, avY = 152;
+    if(cardAvatar && cardAvatar.naturalWidth){
+      x.save(); x.beginPath(); x.rect(P, avY, avS, avS); x.clip();
+      x.drawImage(cardAvatar, P, avY, avS, avS); x.restore();
+      x.strokeStyle = "#2a2118"; x.lineWidth = 2; x.strokeRect(P, avY, avS, avS);
+    }else{
+      x.strokeStyle = "rgba(42,33,24,.35)"; x.lineWidth = 2; x.strokeRect(P, avY, avS, avS);
+      x.fillStyle = "#8d7d65"; x.font = `700 46px ${serif}`; x.textAlign = "center";
+      x.fillText((rep.login||"?").slice(0,1).toUpperCase(), P + avS/2, avY + avS/2 + 16);
+      x.textAlign = "left";
+    }
+    x.fillStyle = "#8d7d65"; x.font = `13px ${mono}`;
+    x.fillText("@" + rep.login, P + avS + 26, avY + 26);
+    x.fillStyle = "#ad382c"; x.font = `700 14px ${mono}`;
+    x.fillText(rep.code, P + avS + 26, avY + 52);
+    x.fillStyle = "#2a2118"; x.font = `700 34px ${serif}`;
+    wrap(x, rep.type.n, S - P*2 - avS - 26).slice(0,2).forEach((l,k) => {
+      x.fillText(l, P + avS + 26, avY + 94 + k*40);
+    });
+
+    /* 四维 2×2 */
+    const gy = avY + avS + 52;
+    x.strokeStyle = "rgba(42,33,24,.28)"; x.lineWidth = 1;
+    x.beginPath(); x.moveTo(P, gy); x.lineTo(S-P, gy); x.stroke();
+    rep.metrics.forEach((m,i) => {
+      const col = i % 2, row = (i - col) / 2;
+      const bx = P + col * ((S - P*2) / 2), by = gy + 48 + row * 108;
+      const v = Math.round(m.val * 100);
+      x.fillStyle = "#8d7d65"; x.font = `14px ${serif}`; x.fillText(m.key, bx, by);
+      x.fillStyle = m.red ? "#ad382c" : "#2a2118"; x.font = `700 40px ${mono}`;
+      x.fillText(String(v), bx, by + 42);
+      x.fillStyle = "rgba(42,33,24,.10)"; x.fillRect(bx, by + 58, (S - P*2)/2 - 44, 5);
+      x.fillStyle = m.red ? "#ad382c" : "#5f5140";
+      x.fillRect(bx, by + 58, ((S - P*2)/2 - 44) * Math.max(0, Math.min(1, v/100)), 5);
+    });
+
+    /* 器物一句 */
+    const ry = gy + 48 + 216 + 6;
+    x.strokeStyle = "rgba(42,33,24,.28)"; x.lineWidth = 1;
+    x.beginPath(); x.moveTo(P, ry); x.lineTo(S-P, ry); x.stroke();
+    const r0 = rep.relics[0];
+    if(r0){
+      x.fillStyle = "#ad382c"; x.font = `600 16px ${serif}`; x.fillText(r0.tag, P, ry + 40);
+      const tw = x.measureText(r0.tag).width;
+      x.fillStyle = "#5f5140"; x.font = `18px ${serif}`;
+      x.fillText(ellipsis(x, r0.name + " —— " + r0.text, S - P*2 - tw - 16), P + tw + 16, ry + 40);
+    }
+
+    /* 语言 + 剖面 + 结论 */
+    x.fillStyle = "#8d7d65"; x.font = `13px ${mono}`;
+    x.fillText("语 言 年 轮", P, ry + 92);
+    x.fillStyle = "#2a2118"; x.font = `20px ${serif}`;
+    x.fillText(ellipsis(x, rep.ring.slice(0,4).map(l => `${l.name} ${l.pctText}%`).join("　·　"), S - P*2), P + 108, ry + 92);
+
+    const strataL = (rep.strata || []).filter(s => !s.gap);
+    const mxL = rep.strataMax || 1;
+    if(strataL.length){
+      const availL = S - P*2;
+      const nL = strataL.length;
+      const gapL = 12;
+      const bwL = Math.max(12, Math.min(46, Math.floor((availL - (nL-1)*gapL) / nL)));
+      const totalL = nL*bwL + (nL-1)*gapL;
+      const baseY = ry + 224;
+      let bx = P + Math.max(0, (availL - totalL) / 2);
+      strataL.forEach(s => {
+        const bh = Math.max(6, Math.round(s.count / mxL * 62));
+        x.fillStyle = "rgba(42,33,24,.14)"; x.fillRect(bx, baseY, bwL, 2);
+        x.fillStyle = "#a8906e"; x.fillRect(bx, baseY - bh, bwL, bh);
+        x.fillStyle = "#8d7d65"; x.font = `12px ${mono}`; x.textAlign = "center";
+        x.fillText(String(s.year).slice(2), bx + bwL/2, baseY + 20);
+        x.textAlign = "left";
+        bx += bwL + gapL;
+      });
+      x.fillStyle = "#8d7d65"; x.font = `12px ${mono}`; x.textAlign = "right";
+      x.fillText("每年新增仓库数", S-P, baseY + 20);
+      x.textAlign = "left";
+    }
+
+    const cLineL = String(rep.concl[0] || "").replace(/<[^>]+>/g, "");
+    x.fillStyle = "#5f5140"; x.font = `17px ${serif}`;
+    let cyL = ry + 278;
+    wrap(x, cLineL, S - P*2).slice(0,2).forEach(l => { x.fillText(l, P, cyL); cyL += 27; });
+
+    /* 页脚 */
+    x.fillStyle = "#5f5140"; x.font = `16px ${mono}`;
+    x.fillText("#WorkBuddy  #1024程序员节", P, S - 92);
+    x.textAlign = "right"; x.fillStyle = "#8d7d65"; x.font = `13px ${mono}`;
+    x.fillText("github.com/" + rep.login, S-P, S - 92);
+    x.textAlign = "left";
+
+    /* 朱印 */
+    const s = 74, sx = S - P - s, sy = 130;
+    x.save(); x.translate(sx + s/2, sy + s/2); x.rotate(-8/180*Math.PI);
+    x.strokeStyle = "#ad382c"; x.lineWidth = 3; x.strokeRect(-s/2, -s/2, s, s);
+    x.fillStyle = "#ad382c"; x.textAlign = "center"; x.font = `700 19px ${serif}`;
+    x.fillText("标", -14, -3); x.fillText("本", 14, -3);
+    x.fillText("已", -14, 21); x.fillText("录", 14, 21);
+    x.restore();
+    x.textAlign = "left";
+
+    return c;
+  }
+
+  /* 模板调度 */
+  function renderCard(rep, style){
+    if(style === "ink")   return drawInkCard(rep);
+    if(style === "label") return drawLabelCard(rep);
+    return drawShareCard(rep);
+  }
+
   function ellipsis(ctx, text, maxW){
     if(ctx.measureText(text).width <= maxW) return text;
     let s = String(text);
     while(s.length && ctx.measureText(s + "…").width > maxW) s = s.slice(0, -1);
     return s + "…";
   }
-
   function wrap(ctx, text, maxW){
     const lines = []; let cur = "";
     for(const ch of String(text)){
@@ -1055,23 +1962,23 @@
         await new Promise(r => setTimeout(r, 200));
         const d = demoData(); d.profile.__demo = true;
         rep = analyze(d);
-        notice = "已载入示例档案";
+        notice = "已调出馆藏示例";
       } else {
         const data = await fetchGithub(username);
         rep = analyze(data);
         if(!data.repos.length){
-          notice = "该账号暂无公开仓库，档案基于有限数据生成";
+          notice = "该探方未见出土器物，档案基于有限线索整理";
         }
       }
     }catch(e){
       stop(); busy = false; $("dig-btn").disabled = false;
       show("input");
       if(e.message === "NOT_FOUND"){
-        err(`找不到 GitHub 用户「${esc(username)}」。<br>请检查拼写，或试试「看示例档案」。`);
+        err(`该探方未见文化层 —— 找不到 GitHub 用户「${esc(username)}」。<br>请核对拼写，或先调阅馆藏示例。`);
       }else if(e.message === "RATE_LIMIT"){
-        err("GitHub 接口触发限流（匿名每小时 60 次），请稍后再试。<br>你也可以先看示例档案。");
+        err("发掘许可已用尽 —— GitHub 匿名接口每小时仅 60 次，请稍后再来。<br>你也可以先调阅馆藏示例。");
       }else{
-        err("读取公开数据失败，可能是网络或接口波动。<br>请稍后重试，或先看示例档案。");
+        err("钻探设备故障 —— 网络或接口波动，请稍后重试。<br>你也可以先调阅馆藏示例。");
       }
       return;
     }
@@ -1093,6 +2000,25 @@
   });
 
   $("demo-btn").addEventListener("click", () => dig("", {demo:true}));
+
+  /* 双人对挖入口 */
+  $("vs-entry").addEventListener("click", () => {
+    vsMsg("");
+    if(!$("vs-a").value && $("username").value) $("vs-a").value = $("username").value;
+    show("vs");
+    setTimeout(() => { (!$("vs-a").value ? $("vs-a") : $("vs-b")).focus(); }, 120);
+  });
+  $("vs-back").addEventListener("click", () => { vsMsg(""); show("input"); });
+  $("vs-from-report").addEventListener("click", () => {
+    vsMsg("");
+    if(currentReport && currentReport.login && !currentReport.isDemo){
+      $("vs-a").value = currentReport.login;
+      $("vs-b").value = "";
+    }
+    show("vs");
+    setTimeout(() => $("vs-b").focus(), 120);
+  });
+  $("vs-form").addEventListener("submit", e => { e.preventDefault(); vsDig(); });
 
   document.querySelectorAll(".chip").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -1135,11 +2061,11 @@
     const btn = $("share-btn");
     if(btn.dataset.busy) return;
     btn.dataset.busy = "1";
-    btn.textContent = "生成中…";
+    btn.textContent = "拓印中…";
 
     const done = blob => {
-      btn.dataset.busy = ""; btn.textContent = "生成分享卡";
-      if(!blob){ toast("生成失败，请重试"); return; }
+      btn.dataset.busy = ""; btn.textContent = "拓印档案";
+      if(!blob){ toast("拓印失败，请重试"); return; }
       if(cardUrl) URL.revokeObjectURL(cardUrl);
       cardBlob = blob;
       cardUrl = URL.createObjectURL(blob);
@@ -1151,18 +2077,37 @@
     preloadAvatar(rep.avatar).then(img => {
       cardAvatar = img;
       let canvas;
-      try{ canvas = drawShareCard(rep); }
-      catch(e){ btn.dataset.busy=""; btn.textContent="生成分享卡"; toast("生成失败，请重试"); return; }
+      try{ canvas = renderCard(rep, cardStyle); }
+      catch(e){ btn.dataset.busy=""; btn.textContent="拓印档案"; toast("拓印失败，请重试"); return; }
       try{
         canvas.toBlob(done, "image/png");
       }catch(e){
         /* 极端情况（画布被污染）→ 去掉头像重画一次 */
         cardAvatar = null;
-        try{ drawShareCard(rep).toBlob(done, "image/png"); }
-        catch(_){ btn.dataset.busy=""; btn.textContent="生成分享卡"; toast("生成失败，请重试"); }
+        try{ renderCard(rep, cardStyle).toBlob(done, "image/png"); }
+        catch(_){ btn.dataset.busy=""; btn.textContent="拓印档案"; toast("拓印失败，请重试"); }
       }
     });
   }
+
+  /* 分享卡模板切换 */
+  let cardStyle = "paper";
+  $("card-tabs").addEventListener("click", e => {
+    const b = e.target.closest("button[data-style]");
+    if(!b || !currentReport) return;
+    cardStyle = b.dataset.style;
+    [...$("card-tabs").children].forEach(x => x.classList.toggle("on", x === b));
+    let cv;
+    try{ cv = renderCard(currentReport, cardStyle); }
+    catch(_){ toast("模板渲染失败，请重试"); return; }
+    const swap = blob => {
+      if(!blob){ toast("模板渲染失败，请重试"); return; }
+      if(cardUrl) URL.revokeObjectURL(cardUrl);
+      cardBlob = blob; cardUrl = URL.createObjectURL(blob);
+      $("card-img").src = cardUrl;
+    };
+    try{ cv.toBlob(swap, "image/png"); }catch(_){ toast("模板渲染失败，请重试"); }
+  });
 
   function closeShareCard(){
     $("modal").classList.remove("on");
@@ -1201,12 +2146,12 @@ ${location.href}
 #WorkBuddy #1024程序员节`;
     try{
       await navigator.clipboard.writeText(text);
-      toast("文案已复制");
+      toast("文案已抄录");
     }catch(e){
       const ta = document.createElement("textarea");
       ta.value = text; ta.style.position="fixed"; ta.style.opacity="0";
       document.body.appendChild(ta); ta.select();
-      try{ document.execCommand("copy"); toast("文案已复制"); }
+      try{ document.execCommand("copy"); toast("文案已抄录"); }
       catch(_){ toast("复制失败，请手动选择"); }
       ta.remove();
     }
@@ -1224,6 +2169,17 @@ ${location.href}
   if(qsUser){
     $("username").value = qsUser;
     setTimeout(()=>dig(qsUser), 60);
+  }
+  /* 直达对挖结果：index.html?vs=用户名A,用户名B（可分享） */
+  const qsVs = new URLSearchParams(location.search).get("vs");
+  if(qsVs){
+    const pair = qsVs.split(",").map(s => normName(s)).filter(Boolean);
+    if(pair.length === 2){
+      $("vs-a").value = pair[0];
+      $("vs-b").value = pair[1];
+      show("vs");
+      setTimeout(()=>vsDig(), 80);
+    }
   }
 })();
 </script>
