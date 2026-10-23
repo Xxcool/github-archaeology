@@ -82,6 +82,25 @@
     font-size:10.5px;line-height:1.25;letter-spacing:.08em;transform:rotate(-8deg);
     box-shadow:0 0 0 3px rgba(173,56,44,.12) inset;font-weight:700;
   }
+  .mast-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end}
+  .auth-btn{
+    display:inline-flex;align-items:center;gap:6px;padding:6px 11px;
+    background:rgba(255,255,255,.45);border:1px solid rgba(42,33,24,.35);border-radius:2px;
+    color:var(--ink);font-size:11px;cursor:pointer;transition:all .18s ease;line-height:1;
+    font-weight:600;letter-spacing:.04em;
+  }
+  .auth-btn:hover{background:rgba(173,56,44,.08);color:var(--red);border-color:var(--red);transform:translateY(-1px)}
+  .auth-btn svg{flex-shrink:0}
+  .auth-user{
+    display:inline-flex;align-items:center;gap:6px;padding:3px 8px;
+    background:rgba(255,255,255,.45);border:1px solid rgba(42,33,24,.35);border-radius:2px;
+    font-size:11px;color:var(--ink);
+  }
+  .auth-avatar{width:20px;height:20px;border-radius:50%;border:1px solid rgba(44,38,30,.2);object-fit:cover}
+  .auth-name{max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+  .auth-tag{font-size:9px;color:var(--red);border:1px solid var(--red);border-radius:2px;padding:0 3px;line-height:1.2;font-weight:700}
+  .auth-logout{background:none;border:none;color:var(--ink-faint);cursor:pointer;font-size:10px;padding:0;margin-left:4px;text-decoration:underline}
+  .auth-logout:hover{color:var(--red)}
   .meta-line{display:flex;justify-content:space-between;gap:10px;font-size:10.5px;color:var(--ink-faint);letter-spacing:.08em;padding:8px 0 0;position:relative;z-index:2}
 
   /* screens */
@@ -326,10 +345,6 @@
     background:radial-gradient(circle at 50% 50%, rgba(120,86,44,.075) 0%, rgba(120,86,44,.03) 50%, rgba(120,86,44,0) 74%)}
   .aging .s3{width:108px;height:94px;right:22px;bottom:18%;
     background:radial-gradient(circle at 50% 50%, rgba(162,120,58,.065) 0%, rgba(162,120,58,0) 72%)}
-  .aging .fold{position:absolute;top:0;bottom:0;left:63%;width:1px;
-    background:linear-gradient(180deg, transparent 0%, rgba(126,100,66,.07) 10%, rgba(255,255,255,.30) 50%, rgba(126,100,66,.06) 90%, transparent 100%)}
-  .aging .fold::after{content:"";position:absolute;top:0;bottom:0;left:1px;width:16px;
-    background:linear-gradient(90deg, rgba(255,255,255,.20), transparent)}
   .aging::after{content:"";position:absolute;inset:0;
     background:radial-gradient(140% 110% at 50% 50%, transparent 62%, rgba(120,92,52,.07) 100%)}
 
@@ -384,26 +399,75 @@
   .sheet{box-shadow:
       0 1px 0 rgba(255,255,255,.6) inset,
       0 34px 80px -22px rgba(40,48,60,.45),
-      0 6px 22px rgba(40,48,60,.24)}  /* ---------- 发掘过程动画 ---------- */
-  .dig-anim{width:104px;height:104px;margin:0 auto 26px;position:relative}
-  .pit{position:absolute;inset:0;border:1.5px solid var(--ink);border-radius:2px;
-       overflow:hidden;background:#efe4cc;
-       box-shadow:0 6px 18px -10px rgba(42,33,24,.6)}
-  .pit i{position:absolute;left:0;right:0;display:block;transform-origin:center}
-  .pit .l1{top:0;height:35%;background:linear-gradient(180deg,#cdbb98,#bda87f);animation:peel 3.6s infinite}
-  .pit .l2{top:35%;height:33%;background:linear-gradient(180deg,#b19b73,#9c8459);animation:peel 3.6s infinite .42s}
-  .pit .l3{top:68%;height:32%;background:linear-gradient(180deg,#8b734a,#6f5a38);animation:peel 3.6s infinite .84s}
-  .pit .find{position:absolute;left:50%;top:52%;width:24px;height:28px;opacity:0;
-             animation:find 3.6s infinite}
-  @keyframes peel{
-    0%,16%{opacity:1;transform:translateY(0) scaleY(1)}
-    32%,92%{opacity:0;transform:translateY(-12px) scaleY(.5)}
-    100%{opacity:1;transform:translateY(0) scaleY(1)}
+      0 6px 22px rgba(40,48,60,.24)}  /* ---------- 发掘过程动画：刷子逐层清扫浮土 ---------- */
+  .dig-anim{width:152px;height:152px;margin:0 auto 22px}
+  .dig-svg{width:100%;height:100%;display:block;overflow:visible}
+
+  /* 刷子：左右往复扫动（每次扫过才推掉一小段浮土） */
+  .dig-svg .brush{transform-box:fill-box;transform-origin:50% 50%;opacity:0;
+    animation:brushSweep 2.8s cubic-bezier(.45,.05,.55,.95) infinite}
+  @keyframes brushSweep{
+    0%{transform:translate(-44px,6px) rotate(-6deg);opacity:0}
+    6%{opacity:1}
+    9%{transform:translate(-30px,4px) rotate(-4deg)}
+    14%{transform:translate(42px,0) rotate(2deg)}
+    21%{transform:translate(8px,4px) rotate(-5deg)}
+    30%{transform:translate(86px,0) rotate(3deg)}
+    37%{transform:translate(46px,5px) rotate(-6deg)}
+    46%{transform:translate(124px,0) rotate(2deg)}
+    53%{transform:translate(84px,4px) rotate(-5deg)}
+    62%{transform:translate(168px,1px) rotate(2deg)}
+    70%{transform:translate(188px,5px) rotate(-4deg);opacity:1}
+    76%,100%{transform:translate(202px,6px) rotate(-6deg);opacity:0}
   }
-  @keyframes find{
-    0%,52%{opacity:0;transform:translate(-50%,6px) scale(.85)}
-    68%,88%{opacity:1;transform:translate(-50%,0) scale(1)}
-    100%{opacity:0;transform:translate(-50%,0) scale(1)}
+
+  /* 三层浮土：跟随扫动阶梯式推进，各层错开成台阶 */
+  .wipe{animation-duration:2.8s;animation-iteration-count:infinite;animation-timing-function:linear}
+  .w1{animation-name:wipeA}
+  .w2{animation-name:wipeB}
+  .w3{animation-name:wipeC}
+  @keyframes wipeA{
+    0%,8%{transform:translateX(0)}   14%{transform:translateX(34px)}
+    21%{transform:translateX(34px)}  30%{transform:translateX(86px)}
+    37%{transform:translateX(86px)}  46%{transform:translateX(128px)}
+    53%{transform:translateX(128px)} 62%,96%{transform:translateX(160px)}
+    100%{transform:translateX(0)}
+  }
+  @keyframes wipeB{
+    0%,10%{transform:translateX(0)}  16%{transform:translateX(34px)}
+    23%{transform:translateX(34px)}  32%{transform:translateX(86px)}
+    39%{transform:translateX(86px)}  48%{transform:translateX(128px)}
+    55%{transform:translateX(128px)} 64%,96%{transform:translateX(160px)}
+    100%{transform:translateX(0)}
+  }
+  @keyframes wipeC{
+    0%,12%{transform:translateX(0)}  18%{transform:translateX(34px)}
+    25%{transform:translateX(34px)}  34%{transform:translateX(86px)}
+    41%{transform:translateX(86px)}  50%{transform:translateX(128px)}
+    57%{transform:translateX(128px)} 66%,96%{transform:translateX(160px)}
+    100%{transform:translateX(0)}
+  }
+
+  /* 器物显形后的暖光 */
+  .relic-glow{opacity:0;animation:relicGlow 2.8s ease-out infinite}
+  @keyframes relicGlow{
+    0%,66%{opacity:0}
+    74%{opacity:.92}
+    90%{opacity:.75}
+    96%,100%{opacity:0}
+  }
+
+  /* 刷下的浮尘 */
+  .dust circle{opacity:0;animation:puff 1.05s ease-out infinite}
+  .dust .d1{animation-delay:0s}
+  .dust .d2{animation-delay:.16s}
+  .dust .d3{animation-delay:.32s}
+  .dust .d4{animation-delay:.46s}
+  .dust .d5{animation-delay:.62s}
+  @keyframes puff{
+    0%{opacity:0;transform:translate(0,2px) scale(.45)}
+    16%{opacity:.75}
+    100%{opacity:0;transform:translate(-6px,-19px) scale(1.35)}
   }
 
   /* ---------- 指标可展开 ---------- */
@@ -548,7 +612,6 @@
   <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
   <div class="aging" aria-hidden="true">
     <i class="stain s1"></i><i class="stain s2"></i><i class="stain s3"></i>
-    <i class="fold"></i>
   </div>
 
   <header class="masthead">
@@ -556,7 +619,10 @@
       GitHub 考古所
       <span class="en mono">GITHUB ARCHAEOLOGY LAB · EST.1024</span>
     </div>
-    <div class="stamp serif">1024<br>特别档案</div>
+    <div class="mast-right">
+      <div id="auth-box"></div>
+      <div class="stamp serif">1024<br>特别档案</div>
+    </div>
   </header>
   <div class="meta-line mono">
     <span>ARCHIVE / PERSONALITY</span>
@@ -613,17 +679,138 @@
   <section id="screen-loading" class="screen hidden">
     <div class="loading">
       <div class="dig-anim" aria-hidden="true">
-        <div class="pit">
-          <i class="l1"></i><i class="l2"></i><i class="l3"></i>
-          <svg class="find" viewBox="0 0 40 48" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12,2 h16 v4 c0,4 -2,6 -2,10 c6,3 10,9 10,16 c0,10 -7,16 -16,16 c-9,0 -16,-6 -16,-16 c0,-7 4,-13 10,-16 c0,-4 -2,-6 -2,-10 z" fill="#ad382c"/>
-            <g stroke="#f4e9d3" stroke-width="1.6" opacity=".55">
-              <path d="M9,26 H31"/><path d="M7,32 H33"/><path d="M11,38 H29"/>
+        <svg class="dig-svg" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <clipPath id="pitClip"><rect x="12" y="12" width="136" height="136" rx="3"/></clipPath>
+
+            <linearGradient id="floorG" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#f5ead2"/><stop offset="1" stop-color="#e3d4b3"/>
+            </linearGradient>
+            <linearGradient id="soil1G" x1="0" y1="0" x2=".35" y2="1">
+              <stop offset="0" stop-color="#e2d5b6"/><stop offset="1" stop-color="#d0c29e"/>
+            </linearGradient>
+            <linearGradient id="soil2G" x1="0" y1="0" x2=".4" y2="1">
+              <stop offset="0" stop-color="#c8ad80"/><stop offset="1" stop-color="#b79a6c"/>
+            </linearGradient>
+            <linearGradient id="soil3G" x1="0" y1="0" x2=".4" y2="1">
+              <stop offset="0" stop-color="#ad8d5e"/><stop offset="1" stop-color="#94774a"/>
+            </linearGradient>
+            <radialGradient id="glowG" cx=".5" cy=".5" r=".5">
+              <stop offset="0" stop-color="#fff6df" stop-opacity=".9"/>
+              <stop offset=".62" stop-color="#ffeec4" stop-opacity=".28"/>
+              <stop offset="1" stop-color="#ffeec4" stop-opacity="0"/>
+            </radialGradient>
+            <pattern id="brushMarks" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(-22)">
+              <path d="M0,0 V9" stroke="#a89066" stroke-width="1" opacity=".28"/>
+            </pattern>
+
+            <mask id="mw1" maskUnits="userSpaceOnUse" x="0" y="0" width="160" height="160">
+              <rect x="0" y="0" width="160" height="160" fill="#fff"/>
+              <path class="wipe w1" fill="#000" d="M-220,-12 H-2 l7,12 l7,14 l1,12 l7,14 l-3,14 l6,10 l1,14 l3,14 l-5,10 l-2,12 l-5,10 l6,14 l4,14 l3,10 l1,12 H-220 Z"/>
+            </mask>
+            <mask id="mw2" maskUnits="userSpaceOnUse" x="0" y="0" width="160" height="160">
+              <rect x="0" y="0" width="160" height="160" fill="#fff"/>
+              <path class="wipe w2" fill="#000" d="M-220,-12 H-2 l-3,10 l3,10 l-4,12 l-5,14 l4,14 l6,12 l-3,10 l-6,12 l3,12 l2,10 l5,14 l5,12 l3,10 l3,10 l-2,12 l-3,12 H-220 Z"/>
+            </mask>
+            <mask id="mw3" maskUnits="userSpaceOnUse" x="0" y="0" width="160" height="160">
+              <rect x="0" y="0" width="160" height="160" fill="#fff"/>
+              <path class="wipe w3" fill="#000" d="M-220,-12 H-2 l-4,14 l-3,14 l1,12 l2,14 l-4,14 l3,14 l-1,14 l2,14 l1,12 l4,12 l-5,14 l0,12 l2,12 l-6,12 H-220 Z"/>
+            </mask>
+          </defs>
+
+          <g clip-path="url(#pitClip)">
+            <!-- 已清理的探方面 -->
+            <rect x="12" y="12" width="136" height="136" fill="url(#floorG)"/>
+            <rect x="12" y="12" width="136" height="136" fill="url(#brushMarks)" opacity=".5"/>
+            <ellipse cx="80" cy="141" rx="31" ry="6" fill="#8a6a44" opacity=".18"/>
+            <ellipse cx="52" cy="40" rx="26" ry="14" fill="#fff" opacity=".2"/>
+
+            <!-- 器物（初始被浮土完全覆盖） -->
+            <g class="relic" transform="translate(80,106) scale(.32) translate(-100,-123)">
+              <path fill="#a8432f" d="M84,10 H116 V26 C116,40 113,52 112,64 C146,78 170,108 170,152 C170,198 144,228 100,228 C56,228 30,198 30,152 C30,108 54,78 88,64 C87,52 84,40 84,26 Z"/>
+              <path fill="#c9674f" opacity=".55" d="M96,22 C88,40 84,54 84,64 C62,76 46,92 38,110 C54,88 72,76 92,68 C90,52 93,34 96,22 Z"/>
+              <g stroke="#f0d9bb" stroke-width="6" stroke-linecap="round" opacity=".45">
+                <path d="M44,132 H156"/><path d="M33,166 H167"/><path d="M54,198 H146"/>
+              </g>
             </g>
-          </svg>
-        </div>
+            <ellipse class="relic-glow" cx="80" cy="104" rx="50" ry="46" fill="url(#glowG)"/>
+
+            <!-- 第三层（最深） -->
+            <g mask="url(#mw3)">
+              <rect x="12" y="12" width="136" height="136" fill="url(#soil3G)"/>
+              <ellipse cx="44" cy="44" rx="32" ry="18" fill="#fff" opacity=".05"/>
+              <ellipse cx="118" cy="92" rx="36" ry="22" fill="#5c3f22" opacity=".07"/>
+              <ellipse cx="72" cy="132" rx="30" ry="13" fill="#fff" opacity=".035"/>
+              <ellipse cx="28" cy="112" rx="18" ry="24" fill="#5c3f22" opacity=".05"/>
+            </g>
+
+            <!-- 第二层 -->
+            <g mask="url(#mw2)">
+              <rect x="12" y="12" width="136" height="136" fill="url(#soil2G)"/>
+              <ellipse cx="108" cy="38" rx="34" ry="16" fill="#fff" opacity=".06"/>
+              <ellipse cx="40" cy="86" rx="28" ry="20" fill="#6b4a28" opacity=".05"/>
+              <ellipse cx="96" cy="126" rx="34" ry="14" fill="#fff" opacity=".04"/>
+            </g>
+
+            <!-- 第一层（最表层的浮土） -->
+            <g mask="url(#mw1)">
+              <rect x="12" y="12" width="136" height="136" fill="url(#soil1G)"/>
+              <ellipse cx="76" cy="34" rx="38" ry="16" fill="#fff" opacity=".07"/>
+              <ellipse cx="34" cy="120" rx="30" ry="22" fill="#6b4a28" opacity=".04"/>
+              <ellipse cx="122" cy="112" rx="22" ry="18" fill="#fff" opacity=".05"/>
+              <g stroke="#9a7d4e" stroke-width="1" opacity=".16">
+                <path d="M20,58 C48,52 76,62 108,56"/>
+                <path d="M24,96 C54,104 84,92 132,100"/>
+                <path d="M18,134 C46,126 82,138 140,130"/>
+              </g>
+            </g>
+
+            <!-- 刮开处的切面阴影：让每层前沿像被切开，而不是一条色带 -->
+            <g clip-path="url(#pitClip)">
+              <path class="wipe w3" fill="none" stroke="#6d4f2e" stroke-opacity=".26" stroke-width="2.4" stroke-linejoin="round"
+                    d="M-220,-12 H-2 l-4,14 l-3,14 l1,12 l2,14 l-4,14 l3,14 l-1,14 l2,14 l1,12 l4,12 l-5,14 l0,12 l2,12 l-6,12"/>
+              <path class="wipe w2" fill="none" stroke="#6d4f2e" stroke-opacity=".22" stroke-width="2.2" stroke-linejoin="round"
+                    d="M-220,-12 H-2 l-3,10 l3,10 l-4,12 l-5,14 l4,14 l6,12 l-3,10 l-6,12 l3,12 l2,10 l5,14 l5,12 l3,10 l3,10 l-2,12 l-3,12"/>
+              <path class="wipe w1" fill="none" stroke="#6d4f2e" stroke-opacity=".30" stroke-width="2.6" stroke-linejoin="round"
+                    d="M-220,-12 H-2 l7,12 l7,14 l1,12 l7,14 l-3,14 l6,10 l1,14 l3,14 l-5,10 l-2,12 l-5,10 l6,14 l4,14 l3,10 l1,12"/>
+            </g>
+          </g>
+
+          <!-- 探方边框与标尺 -->
+          <rect x="12" y="12" width="136" height="136" rx="3" fill="none" stroke="#2a2118" stroke-width="2"/>
+          <g fill="none" stroke="#ad382c" stroke-width="1.5" opacity=".5">
+            <path d="M12,26 V12 H26"/><path d="M134,12 H148 V26"/>
+            <path d="M12,134 V148 H26"/><path d="M134,148 H148 V134"/>
+          </g>
+          <g stroke="#8a6a44" stroke-width="1.1" opacity=".4">
+            <path d="M12,42 H7"/><path d="M12,68 H7"/><path d="M12,94 H7"/><path d="M12,120 H7"/>
+          </g>
+
+          <!-- 刷子 -->
+          <g transform="translate(0,68) scale(.9)">
+            <g class="brush">
+              <g class="dust" fill="#b79a6d">
+                <circle class="d1" cx="6" cy="10" r="1.9"/>
+                <circle class="d2" cx="-6" cy="12" r="2.4"/>
+                <circle class="d3" cx="14" cy="14" r="1.5"/>
+                <circle class="d4" cx="-13" cy="8" r="1.7"/>
+                <circle class="d5" cx="2" cy="16" r="2.1"/>
+              </g>
+              <g transform="rotate(-26)">
+                <rect x="-5" y="-60" width="10" height="46" rx="5" fill="#8a6a44"/>
+                <rect x="-5" y="-60" width="3.4" height="46" rx="1.7" fill="#a98a5e" opacity=".75"/>
+                <rect x="-7.5" y="-17" width="15" height="11" rx="2.2" fill="#6b5334"/>
+                <path d="M-7.5,-6 C-10.5,5 -9.6,13 -5.8,15.4 L5.8,15.4 C9.6,13 10.5,5 7.5,-6 Z" fill="#ecdcbb"/>
+                <g stroke="#c3aa80" stroke-width=".9" opacity=".85">
+                  <path d="M-5,-5 L-5.8,14"/><path d="M-2,-5 L-2.4,14.6"/>
+                  <path d="M1,-5 L1.4,14.6"/><path d="M4,-5 L4.8,14"/>
+                </g>
+              </g>
+            </g>
+          </g>
+        </svg>
       </div>
-      <div class="drill mono">DRILLING · 正在钻探</div>
+      <div class="drill mono">BRUSHING · 正在清扫浮土</div>
       <h3 class="load-title serif" id="load-title">翻开土层</h3>
       <p class="load-sub" id="load-sub">正在读取公开地层……</p>
       <div class="bar"><i id="load-bar"></i></div>
@@ -731,6 +918,8 @@
   <p class="modal-tip">手机端长按图片也可直接保存</p>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>if(!window.supabase){document.write('<script src="assets/supabase.js"><\/script>');}</script>
 <script>
 (() => {
   "use strict";
@@ -818,21 +1007,289 @@
     return () => { clearInterval(timer); bar.style.width="100%"; };
   }
 
-  /* ---------------- 取数 ---------------- */
+  /* ---------------- Supabase GitHub 鉴权 ---------------- */
+  const SUPABASE_URL = "https://hfugsgmthemvpoagfycl.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_FveXs_BKaLJeZRoqcZk3DQ_9VfVdVQj";
+  let supaClient = null;
+  try {
+    if(window.supabase && typeof window.supabase.createClient === "function"){
+      supaClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    }
+  } catch(err) {
+    console.warn("Supabase client init failed:", err);
+  }
+
+  let currentUser = null;
+  let currentToken = localStorage.getItem("gh_oauth_token") || "";
+
+  function updateAuthUI(user, token){
+    const box = $("auth-box");
+    if(!box) return;
+    if(user && token){
+      box.innerHTML = `
+        <div class="auth-user mono">
+          ${user.avatar_url ? `<img src="${esc(user.avatar_url)}" class="auth-avatar" alt="">` : ""}
+          <span class="auth-name" title="${esc(user.user_name || "")}">${esc(user.user_name || "已认证")}</span>
+          <span class="auth-tag">5000次/h</span>
+          <button type="button" class="auth-logout" id="auth-logout-btn">退出</button>
+        </div>`;
+      $("auth-logout-btn")?.addEventListener("click", logoutGitHub);
+    } else {
+      box.innerHTML = `
+        <button type="button" class="auth-btn mono" id="auth-login-btn">
+          <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+          </svg>
+          <span>登录解锁 5000 次</span>
+        </button>`;
+      $("auth-login-btn")?.addEventListener("click", loginGitHub);
+    }
+  }
+
+  function decodeJwtPayload(token){
+    try {
+      const parts = token.split('.');
+      if (parts.length < 2) return null;
+      const base64Url = parts[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const pad = base64.length % 4;
+      const padded = pad ? base64 + '='.repeat(4 - pad) : base64;
+      const decoded = atob(padded);
+      const bytes = Uint8Array.from(decoded, c => c.charCodeAt(0));
+      const jsonStr = new TextDecoder().decode(bytes);
+      return JSON.parse(jsonStr);
+    } catch(e) {
+      return null;
+    }
+  }
+
+  async function loginGitHub(){
+    let returnUrl = window.location.origin + window.location.pathname;
+    if(window.location.search){
+      returnUrl += window.location.search;
+    } else if(window.location.host.includes("workbuddy.host")){
+      returnUrl += "?sharecode=HVE7YZLNGQ";
+    }
+
+    if(supaClient && supaClient.auth && typeof supaClient.auth.signInWithOAuth === "function"){
+      const { error } = await supaClient.auth.signInWithOAuth({
+        provider: "github",
+        options: {
+          redirectTo: returnUrl,
+          scopes: "read:user"
+        }
+      });
+      if(!error) return;
+      console.warn("Supabase signInWithOAuth fallback:", error);
+    }
+    // 降级：直接跳转 Supabase OAuth 授权网关，无需等待 SDK
+    window.location.href = `${SUPABASE_URL}/auth/v1/authorize?provider=github&redirect_to=${encodeURIComponent(returnUrl)}&scopes=read%3Auser`;
+  }
+
+  async function logoutGitHub(){
+    if(supaClient && supaClient.auth) await supaClient.auth.signOut().catch(()=>null);
+    localStorage.removeItem("gh_oauth_token");
+    localStorage.removeItem("gh_oauth_user");
+    currentUser = null;
+    currentToken = "";
+    updateAuthUI(null, null);
+    toast("已退出登录，恢复匿名发掘");
+  }
+
+  async function initAuth(){
+    let justLoggedIn = false;
+
+    // 1. 优先从 URL Hash 提取 Supabase OAuth 授权回调（零外部依赖、瞬时完成）
+    if(window.location.hash && (window.location.hash.includes("access_token") || window.location.hash.includes("provider_token"))){
+      try {
+        const hashStr = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : window.location.hash;
+        const params = new URLSearchParams(hashStr);
+        const pToken = params.get("provider_token");
+        const aToken = params.get("access_token");
+
+        let extractedUser = null;
+        if(aToken){
+          const payload = decodeJwtPayload(aToken);
+          if(payload){
+            const meta = payload.user_metadata || {};
+            extractedUser = {
+              user_name: meta.user_name || meta.preferred_username || payload.email?.split("@")[0] || "GitHub 用户",
+              avatar_url: meta.avatar_url || ""
+            };
+          }
+        }
+
+        if(pToken){
+          currentToken = pToken;
+          localStorage.setItem("gh_oauth_token", pToken);
+        }
+        if(extractedUser){
+          currentUser = extractedUser;
+          localStorage.setItem("gh_oauth_user", JSON.stringify(extractedUser));
+        }
+
+        if(currentUser || currentToken){
+          justLoggedIn = true;
+        }
+
+        // 清除 hash，保持地址栏美观
+        try {
+          const cleanUrl = window.location.pathname + window.location.search;
+          history.replaceState(null, "", cleanUrl);
+        } catch(_) {}
+      } catch(e) {
+        console.warn("Hash auth parse error:", e);
+      }
+    }
+
+    // 2. 如果未从 hash 提取，则从本地缓存读取
+    if(!currentUser || !currentToken){
+      try {
+        const cachedUser = JSON.parse(localStorage.getItem("gh_oauth_user") || "null");
+        const cachedToken = localStorage.getItem("gh_oauth_token");
+        if(cachedUser && cachedToken){
+          currentUser = cachedUser;
+          currentToken = cachedToken;
+        }
+      } catch(_) {}
+    }
+
+    // 3. 渲染顶部登录/认证状态栏
+    updateAuthUI(currentUser, currentToken);
+
+    // 4. 自动填充用户名输入框 & 欢迎提示
+    if(currentUser && currentUser.user_name && currentUser.user_name !== "GitHub 用户"){
+      const nameInput = $("username");
+      if(nameInput && (!nameInput.value.trim() || nameInput.value.trim() === "torvalds" || justLoggedIn)){
+        nameInput.value = currentUser.user_name;
+      }
+      if(justLoggedIn){
+        toast(`🎉 欢迎 @${currentUser.user_name}，已解锁 5,000 次/小时发掘配额！`);
+      }
+    }
+
+    // 5. 检查是否有中断的查询（限流后引导登录的恢复）
+    function checkPendingDig(){
+      const vsa = localStorage.getItem("pending_vs_a");
+      const vsb = localStorage.getItem("pending_vs_b");
+      if(vsa && vsb){
+        localStorage.removeItem("pending_vs_a");
+        localStorage.removeItem("pending_vs_b");
+        $("vs-a").value = vsa;
+        $("vs-b").value = vsb;
+        show("vs");
+        setTimeout(() => vsDig(), 260);
+        return;
+      }
+      const pending = localStorage.getItem("pending_dig_user");
+      if(pending){
+        localStorage.removeItem("pending_dig_user");
+        $("username").value = pending;
+        setTimeout(() => dig(pending), 260);
+      }
+    }
+    checkPendingDig();
+
+    // 6. 若 Supabase 客户端存在，监听会话变化并保持同步
+    if(supaClient && supaClient.auth){
+      supaClient.auth.onAuthStateChange(async (event, session) => {
+        if(session){
+          if(session.provider_token){
+            currentToken = session.provider_token;
+            localStorage.setItem("gh_oauth_token", session.provider_token);
+          }
+          const u = session.user?.user_metadata || {};
+          currentUser = {
+            user_name: u.user_name || u.preferred_username || session.user?.email?.split("@")[0] || "GitHub 用户",
+            avatar_url: u.avatar_url || ""
+          };
+          localStorage.setItem("gh_oauth_user", JSON.stringify(currentUser));
+          updateAuthUI(currentUser, currentToken);
+          if($("username") && (!$("username").value.trim() || $("username").value.trim() === "torvalds") && currentUser.user_name && currentUser.user_name !== "GitHub 用户"){
+            $("username").value = currentUser.user_name;
+          }
+        } else if(event === "SIGNED_OUT"){
+          logoutGitHub();
+        }
+      });
+    }
+  }
+
+  /* ---------------- 取数（支持 GitHub OAuth 5000次 + ETag 缓存） ---------------- */
   async function fetchGithub(username){
     const base = "https://api.github.com";
+    const token = currentToken || localStorage.getItem("gh_oauth_token") || localStorage.getItem("gh_token") || "";
+
+    async function req(path, cacheKey){
+      const cached = (() => {
+        try {
+          const item = localStorage.getItem("gh_cache_" + cacheKey);
+          return item ? JSON.parse(item) : null;
+        } catch(_) { return null; }
+      })();
+
+      const headers = {
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28"
+      };
+      if(token){
+        headers["Authorization"] = "Bearer " + token.trim();
+      }
+      if(cached && cached.etag){
+        headers["If-None-Match"] = cached.etag;
+      }
+
+      let res;
+      try {
+        res = await fetch(base + path, { headers });
+      } catch(netErr) {
+        if(cached && cached.data){
+          return { ok: true, status: 200, data: cached.data };
+        }
+        throw netErr;
+      }
+
+      const reset = res.headers.get("x-ratelimit-reset");
+
+      // 304 Not Modified：服务端确认无变动，复用本地缓存且 0 消耗配额
+      if(res.status === 304 && cached && cached.data){
+        return { ok: true, status: 304, data: cached.data };
+      }
+      if(res.status === 404) return { ok: false, status: 404 };
+      if(res.status === 403 || res.status === 429) return { ok: false, status: res.status, reset };
+      if(!res.ok) return { ok: false, status: res.status };
+
+      const data = await res.json();
+      const etag = res.headers.get("etag");
+      if(etag){
+        try {
+          localStorage.setItem("gh_cache_" + cacheKey, JSON.stringify({ etag, data, time: Date.now() }));
+        } catch(_) {}
+      }
+      return { ok: true, status: res.status, data };
+    }
+
+    const u = encodeURIComponent(username);
     const [pr, rr, er] = await Promise.all([
-      fetch(base + "/users/" + encodeURIComponent(username), {headers:{"Accept":"application/vnd.github+json"}}),
-      fetch(base + "/users/" + encodeURIComponent(username) + "/repos?per_page=100&sort=pushed", {headers:{"Accept":"application/vnd.github+json"}}),
-      fetch(base + "/users/" + encodeURIComponent(username) + "/events/public?per_page=100", {headers:{"Accept":"application/vnd.github+json"}}).catch(()=>null)
+      req("/users/" + u, u + "_profile"),
+      req("/users/" + u + "/repos?per_page=100&sort=pushed", u + "_repos"),
+      req("/users/" + u + "/events/public?per_page=100", u + "_events").catch(()=>null)
     ]);
+
     if(pr.status === 404) throw new Error("NOT_FOUND");
-    if(pr.status === 403 || pr.status === 429) throw new Error("RATE_LIMIT");
-    if(!pr.ok) throw new Error("API_FAIL");
-    const profile = await pr.json();
-    const repos = rr.ok ? await rr.json() : [];
-    const events = (er && er.ok) ? await er.json().catch(()=>[]) : [];
-    return {profile, repos:Array.isArray(repos)?repos:[], events:Array.isArray(events)?events:[]};
+    if(pr.status === 403 || pr.status === 429 || (rr && (rr.status === 403 || rr.status === 429))){
+      const resetTs = Number(pr.reset || (rr && rr.reset));
+      const waitMin = resetTs ? Math.max(1, Math.ceil((resetTs * 1000 - Date.now()) / 60000)) : null;
+      const err = new Error("RATE_LIMIT");
+      err.waitMin = waitMin;
+      throw err;
+    }
+    if(!pr.ok || !pr.data) throw new Error("API_FAIL");
+
+    const profile = pr.data;
+    const repos = (rr && rr.ok && Array.isArray(rr.data)) ? rr.data : [];
+    const events = (er && er.ok && Array.isArray(er.data)) ? er.data : [];
+    return { profile, repos, events };
   }
 
   /* ---------------- 示例数据 ---------------- */
@@ -1359,11 +1816,22 @@
       renderVs(analyze(da), analyze(db));
     }catch(e){
       $("vs-out").innerHTML = "";
-      vsMsg(e.message === "NOT_FOUND"
-        ? `该探方未见文化层 —— GitHub 上找不到「${esc(e.user)}」，请核对拼写。`
-        : e.message === "RATE_LIMIT"
-        ? "发掘许可已用尽 —— GitHub 匿名接口每小时仅 60 次，对挖一次要消耗双份。请稍后再来。"
-        : "钻探设备故障 —— 网络或接口波动，请稍后重试。");
+      if(e.message === "NOT_FOUND"){
+        vsMsg(`该探方未见文化层 —— GitHub 上找不到「${esc(e.user)}」，请核对拼写。`);
+      }else if(e.message === "RATE_LIMIT"){
+        const hasToken = currentToken || localStorage.getItem("gh_oauth_token");
+        if(!hasToken && supaClient){
+          localStorage.setItem("pending_vs_a", na);
+          localStorage.setItem("pending_vs_b", nb);
+          vsMsg(`对挖消耗较大，匿名配额已用尽。<br><b>正在为您调起 GitHub 授权，直接解锁 5,000 次/小时……</b><br><button type="button" class="btn primary small" id="vs-auth-btn" style="margin:8px 0;font-size:12px;padding:5px 14px;">立即授权</button>`);
+          $("vs-auth-btn")?.addEventListener("click", loginGitHub);
+          setTimeout(() => { if(!currentUser) loginGitHub(); }, 1200);
+        } else {
+          vsMsg(`发掘许可已用尽 —— ${e.waitMin ? `预计 ${e.waitMin} 分钟后恢复` : "请稍后再来"}。`);
+        }
+      }else{
+        vsMsg("钻探设备故障 —— 网络或接口波动，请稍后重试。");
+      }
     }finally{
       $("vs-btn").disabled = false;
     }
@@ -1976,7 +2444,17 @@
       if(e.message === "NOT_FOUND"){
         err(`该探方未见文化层 —— 找不到 GitHub 用户「${esc(username)}」。<br>请核对拼写，或先调阅馆藏示例。`);
       }else if(e.message === "RATE_LIMIT"){
-        err("发掘许可已用尽 —— GitHub 匿名接口每小时仅 60 次，请稍后再来。<br>你也可以先调阅馆藏示例。");
+        const hasToken = currentToken || localStorage.getItem("gh_oauth_token");
+        const minText = e.waitMin ? `，预计 <b>${e.waitMin}</b> 分钟后恢复` : "";
+        if(!hasToken && supaClient){
+          err(`发掘许可已用尽 —— GitHub 匿名接口每小时仅 60 次${minText}。<br><button type="button" class="btn primary small" id="err-login-action" style="margin:10px 0;font-size:12.5px;padding:7px 16px;">🐱 点击登录 GitHub 解锁 5,000 次/小时</button><br>你也可以先调阅馆藏示例。`);
+          $("err-login-action")?.addEventListener("click", () => {
+            localStorage.setItem("pending_dig_user", username);
+            loginGitHub();
+          });
+        } else {
+          err(`发掘许可已用尽 —— GitHub 接口每小时配额耗尽${minText}。<br>你也可以先调阅馆藏示例。`);
+        }
       }else{
         err("钻探设备故障 —— 网络或接口波动，请稍后重试。<br>你也可以先调阅馆藏示例。");
       }
@@ -2159,6 +2637,9 @@ ${location.href}
 
   /* 初始文档编号 */
   $("doc-id").textContent = "No. ————";
+
+  /* 初始化 GitHub OAuth 认证状态 */
+  initAuth();
 
   /* 直达示例档案：index.html#demo */
   if(location.hash === "#demo" || new URLSearchParams(location.search).has("demo")){
