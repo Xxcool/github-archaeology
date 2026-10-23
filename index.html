@@ -1090,14 +1090,26 @@
     window.location.href = `${SUPABASE_URL}/auth/v1/authorize?provider=github&redirect_to=${encodeURIComponent(returnUrl)}&scopes=read%3Auser`;
   }
 
+  let isLoggingOut = false;
   async function logoutGitHub(){
-    if(supaClient && supaClient.auth) await supaClient.auth.signOut().catch(()=>null);
-    localStorage.removeItem("gh_oauth_token");
-    localStorage.removeItem("gh_oauth_user");
-    currentUser = null;
-    currentToken = "";
-    updateAuthUI(null, null);
-    toast("已退出登录，恢复匿名发掘");
+    if(isLoggingOut) return;
+    isLoggingOut = true;
+    try {
+      localStorage.removeItem("gh_oauth_token");
+      localStorage.removeItem("gh_oauth_user");
+      currentUser = null;
+      currentToken = "";
+      updateAuthUI(null, null);
+      if(supaClient && supaClient.auth){
+        try {
+          // 本地快速清除会话，不阻塞 UI，避免无谓的网络挂起与循环调用
+          supaClient.auth.signOut({ scope: "local" }).catch(()=>null);
+        } catch(_) {}
+      }
+      toast("已退出登录，恢复匿名发掘");
+    } finally {
+      setTimeout(() => { isLoggingOut = false; }, 400);
+    }
   }
 
   async function initAuth(){
@@ -1213,7 +1225,11 @@
             $("username").value = currentUser.user_name;
           }
         } else if(event === "SIGNED_OUT"){
-          logoutGitHub();
+          localStorage.removeItem("gh_oauth_token");
+          localStorage.removeItem("gh_oauth_user");
+          currentUser = null;
+          currentToken = "";
+          updateAuthUI(null, null);
         }
       });
     }
