@@ -373,7 +373,11 @@
   .yr-panel .yp-row b{color:var(--ink);font-weight:600}
   .yr-panel .yp-list{color:var(--ink-faint);font-size:11.5px;margin-top:6px;padding-top:6px;border-top:1px dotted rgba(140,110,70,.3);overflow-wrap:anywhere}
 
-  footer{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font-size:10.5px;color:var(--ink-faint);line-height:1.9;letter-spacing:.04em;position:relative;z-index:2}  footer b{color:var(--ink-soft);font-weight:600}
+  footer{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font-size:10.5px;color:var(--ink-faint);line-height:1.9;letter-spacing:.04em;position:relative;z-index:2}
+  footer p{margin:5px 0}
+  footer b{color:var(--ink-soft);font-weight:600}
+  .footer-link{color:var(--red);text-decoration:underline;text-underline-offset:2.5px;transition:color .15s}
+  .footer-link:hover{color:var(--red-deep)}
 
   @media (max-width:560px){
     body{padding:0 0 40px}
@@ -895,9 +899,9 @@
   </section>
 
   <footer>
-    <b>说明</b>　本档案由公开 GitHub 数据实时推导，结果仅供娱乐，不构成任何专业评价。<br>
-    数据来自 GitHub REST API；若无网络或触发限流，可点「调阅馆藏示例」离线体验。<br>
-    页面不收集、不上传任何用户信息，所有计算均在你的浏览器本地完成。
+    <p><b>【发掘准则】</b> 仅调阅公开地层数据实时测算，纯本地浏览器运行，结果仅供娱乐。</p>
+    <p><b>【安全与许可】</b> 匿名 60 次/h，登录解锁 5,000 次/h 只读配额；不碰私有库，Token 仅存本地。</p>
+    <p><b>【馆藏出处】</b> WorkBuddy「1024 造物挑战」· 开源于 <a href="https://github.com/Xxcool/github-archaeology" target="_blank" rel="noopener" class="footer-link">Xxcool/github-archaeology</a> 🌟 欢迎点个 Star</p>
   </footer>
 </main>
 
