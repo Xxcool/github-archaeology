@@ -88,13 +88,3 @@ open index.html      # macOS
 ## 隐私
 
 只读 GitHub 的公开数据（`/users`、`/users/:name/repos`、`/users/:name/events/public`），不涉及任何授权登录。拿到的数据全部在浏览器本地计算和渲染，**不上传、不落库、不留存**。关掉页面，什么都没留下。
-
----
-
-## 关于
-
-作品参加 **WorkBuddy「1024 造物挑战」程序员节应用创作大赛**。
-
-`#WorkBuddy` `#1024程序员节`
-
-Logo 与视觉为原创，朱红方标取自印章意象，罐身三道线为地层。
